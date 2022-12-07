@@ -1,4 +1,5 @@
-Сетевой интерфейс **presp32** предназначен для расширения коммуникационных возможностей программируемых реле серии ПР200, ПР102, ПР100. 
+
+ интерфейс **presp32** предназначен для расширения коммуникационных возможностей программируемых реле серии ПР200, ПР102, ПР100. 
 В зависимости от используемой [прошивки](https://github.com/pr200sd/presp32/wiki/3.1-%D0%92%D0%B5%D1%80%D1%81%D0%B8%D0%B8-%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%BD%D0%BE%D0%B3%D0%BE-%D0%BE%D0%B1%D0%B5%D1%81%D0%BF%D0%B5%D1%87%D0%B5%D0%BD%D0%B8%D1%8F) и [модификации плат](https://github.com/pr200sd/presp32/wiki/2.-%D0%9C%D0%BE%D0%B4%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D0%B8), доступны следующие сервисы и протоколы:
 * [modbus TCP](https://github.com/pr200sd/presp32/wiki/4.2-Modbus-TCP)
 * [Modbus RTU](https://github.com/pr200sd/presp32/wiki/4.3-Modbus-RTU)
@@ -22,3 +23,10 @@ _Вариант в виде USB стика, можно использовать 
 ***
 _Версия с подключением по Ethernet._
 ![](https://github.com/pr200sd/presp32/blob/main/img/pr_eth1.jpg)
+
+_Сетевой интерфейс Wi-Fi/Ethernet с установкой на din-рейку._
+![](https://github.com/pr200sd/presp32/blob/main/img/eth_din.jpg)
+
+_4-х канальный RGBW ШИМ контроллер Wi-Fi/Ethernet с установкой на din-рейку._
+![](https://github.com/pr200sd/presp32/blob/main/img/RGBW.jpg)
+
