@@ -1,0 +1,5 @@
+esp32_start.bin - файл для первичной загрузки в esp32. 
+
+
+Последующие обновления через механизм OTA в WEB интерфейсе.
+https://github.com/pr200sd/presp32/wiki/4.11-Firmware-Upgrade-(OTA)
