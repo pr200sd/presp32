@@ -1,32 +1,15 @@
+**Программно-аппаратный комплекс **presp32** предназначен для построения на базе ESP32 устройств местного/удаленного контроля и управления с поддержкой различных протоколов и интерфейсов. WEB интерфейс и обновление по воздуху позволяет быстро конфигурировать устройства без подключения программатора и физического доступа к устройствам.**
 
- интерфейс **presp32** предназначен для расширения коммуникационных возможностей программируемых реле серии ПР200, ПР102, ПР100. 
-В зависимости от используемой [прошивки](https://github.com/pr200sd/presp32/wiki/3.1-%D0%92%D0%B5%D1%80%D1%81%D0%B8%D0%B8-%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%BD%D0%BE%D0%B3%D0%BE-%D0%BE%D0%B1%D0%B5%D1%81%D0%BF%D0%B5%D1%87%D0%B5%D0%BD%D0%B8%D1%8F) и [модификации плат](https://github.com/pr200sd/presp32/wiki/2.-%D0%9C%D0%BE%D0%B4%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D0%B8), доступны следующие сервисы и протоколы:
-* [modbus TCP](https://github.com/pr200sd/presp32/wiki/4.2-Modbus-TCP)
-* [Modbus RTU](https://github.com/pr200sd/presp32/wiki/4.3-Modbus-RTU)
-* [Telegram Bot](https://github.com/pr200sd/presp32/wiki/4.4-Telegram-Bot)
-* [HomeKit](https://github.com/pr200sd/presp32/wiki/4.5-HomeKit)
-* [MQTT](https://github.com/pr200sd/presp32/wiki/4.8-MQTT)
-* [1-wire(ds18b20)](https://github.com/pr200sd/presp32/wiki/4.6-ds18b20)
-* [Logger](https://github.com/pr200sd/presp32/wiki/4.9-Logger)
-* [Digital-IO](https://github.com/pr200sd/presp32/wiki/4.7-Digital-IO)
+**Готовые решения на базе PRESP32.**
 
-Существует несколько модификаций сетевых интерфейсов для подключения к программируемым реле.
-***
-_Вариант для установки в модификацию ПР200, подключение через WI-FI._
-![](https://github.com/pr200sd/presp32/blob/main/img/presp32_psram.jpg)
-***
-_Вариант внешнего интерфейса, подключается через RS485, можно использовать совместно с модификациями ПР200, ПР102, ПР100, подключение через WI-FI._
-![](https://github.com/pr200sd/presp32/blob/main/img/presp32_ext.jpg)
-***
-_Вариант в виде USB стика, можно использовать так же как внешний вариант, или как отладочный комплект при пусконаладочных работах на объекте, подключение через WI-FI._
-![](https://github.com/pr200sd/presp32/blob/main/img/pr_stick_tr.jpg)
-***
-_Версия с подключением по Ethernet._
-![](https://github.com/pr200sd/presp32/blob/main/img/pr_eth1.jpg)
+[Сниффер Modbus RTU](https://github.com/pr200sd/presp32/wiki/4.3.2-%D0%A1%D0%BD%D0%B8%D1%84%D1%84%D0%B5%D1%80-Modbus-RTU)
 
-_Сетевой интерфейс Wi-Fi/Ethernet с установкой на din-рейку._
-![](https://github.com/pr200sd/presp32/blob/main/img/eth_din.jpg)
+[ШИМ контроллер RGBW Ethernet Wi‐Fi 4 канала](https://github.com/pr200sd/presp32/wiki/2.2-%D0%A8%D0%98%D0%9C-%D0%BA%D0%BE%D0%BD%D1%82%D1%80%D0%BE%D0%BB%D0%BB%D0%B5%D1%80-RGBW-Ethernet-Wi%E2%80%90Fi-4-%D0%BA%D0%B0%D0%BD%D0%B0%D0%BB%D0%B0)
 
-_4-х канальный RGBW ШИМ контроллер Wi-Fi/Ethernet с установкой на din-рейку._
-![](https://github.com/pr200sd/presp32/blob/main/img/RGBW.jpg)
+[Шлюз Ethernet-Wi-Fi](https://github.com/pr200sd/presp32/wiki/2.1-%D0%9C%D0%BE%D0%B4%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F-%D0%BD%D0%B0-din-%D1%80%D0%B5%D0%B9%D0%BA%D1%83--Ethernet-Wi-Fi)
 
+[Управление блоком питания](https://github.com/pr200sd/presp32/wiki/2.3-%D0%A3%D0%BF%D1%80%D0%B0%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5-%D0%B1%D0%BB%D0%BE%D0%BA%D0%BE%D0%BC-%D0%BF%D0%B8%D1%82%D0%B0%D0%BD%D0%B8%D1%8F)
+
+[Сетевые интерфейсы](https://github.com/pr200sd/presp32/wiki/2.-%D0%9C%D0%BE%D0%B4%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D0%B8-%D0%BF%D0%BB%D0%B0%D1%82)
+
+ 
