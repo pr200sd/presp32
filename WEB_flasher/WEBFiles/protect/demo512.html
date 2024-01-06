@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html><head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>Modbus data</title>
+	<link rel="stylesheet" href="/style.css">
+	<script src="../lib/site.js"></script>	
+	<script src="../lib/jquery-2.1.4.min.js"></script>
+	
+	<script src="../lib/tween-min.js"></script>
+	<script src="../lib/steelseries-min.js"></script>
+	
+	
+<style>
+   .red {
+    color: red; /* Цвет символа */   
+   } 
+   
+   .green {
+    color: green; /* Цвет символа */   
+   } 
+   
+canvas {
+  high: 50%;
+  width: 49%;
+}
+
+#din1,#din2,#din3,#din4,#din5,#din6,#din7,#din8 {
+  
+  width: 11.5%;
+}
+   
+   
+  </style>	
+	
+	
+</head><body onload="init()">
+
+<div class="content">
+
+<h2 class="title">Состояние дискретных входов</h2>
+
+<canvas id="din1" ></canvas>
+<canvas id="din2" ></canvas>
+<canvas id="din3" ></canvas>
+<canvas id="din4" ></canvas>
+<canvas id="din5" ></canvas>
+<canvas id="din6" ></canvas>
+<canvas id="din7" ></canvas>
+<canvas id="din8" ></canvas>
+
+
+<h2 class="title">Состояние аналоговых входов</h2>
+
+
+<h2 class="title">Канал AI1 =<input type="text" id="ai1" size="18" maxlength="6" value="0" class="title"></h2>
+<h2 class="title">Канал AI2 =<input type="text" id="ai2" size="18" maxlength="6" value="0" class="title"></h2>
+<h2 class="title">Канал AI3 =<input type="text" id="ai3" size="18" maxlength="6" value="0" class="title"></h2>
+<h2 class="title">Канал AI4 =<input type="text" id="ai4" size="18" maxlength="6" value="0" class="title"></h2>
+
+
+
+<canvas id="ai1_r" ></canvas> 
+<canvas id="ai2_r" ></canvas> 
+<canvas id="ai3_r" ></canvas> 
+<canvas id="ai4_r" ></canvas> 
+
+
+<h2 class="title">Отправка данных в ПР200</h2>
+
+<p>Задание 1 значения в формате INT[0-1000]: <input type="range" min="0" max="1000" id="temp_int1"   value=""></p>    
+<input type="text" id="int1" size="18" maxlength="6" value="0" class="title"></h2>
+<p>Задание 2 значения в формате INT[0-1000]: <input type="range" min="0" max="1000" id="temp_int2"   value=""></p>    
+<input type="text" id="int2" size="18" maxlength="6" value="0" class="title"></h2>
+
+
+<!--<p>Задание значения в формате FLOAT: <input type="range" min="-10000" max="10000" id="temp_float" oninput="tomodbus()" value=""></p>    -->
+<p>Задание 1 значения в формате FLOAT[0-100.0]: <input type="range" min="0" max="10000" id="temp_float1"  value=""></p>
+<input type="text" id="float1" size="18" maxlength="6" value="0" class="title"></h2>
+<p>Задание 2 значения в формате FLOAT[0-100.0]: <input type="range" min="0" max="10000" id="temp_float2"  value=""></p>
+<input type="text" id="float2" size="18" maxlength="6" value="0" class="title"></h2>
+
+
+
+
+
+
+<h2 class="title">Управление выходами ПР200</h2>
+
+<p><input type="checkbox" class="inp" id="i0" value="1"> OUT1</p>
+<p><input type="checkbox" class="inp" id="i1" value="2"> OUT2</p>
+<p><input type="checkbox" class="inp" id="i2" value="4"> OUT3</p>
+<p><input type="checkbox" class="inp" id="i3" value="8"> OUT4</p>
+<p><input type="checkbox" class="inp" id="i4" value="16"> OUT5</p>
+<p><input type="checkbox" class="inp" id="i5" value="32"> OUT6</p>
+<p><input type="checkbox" class="inp" id="i6" value="64"> OUT7</p>
+<p><input type="checkbox" class="inp" id="i7" value="128"> OUT8</p>
+<p><input type="checkbox" class="inp" id="i8" value="256"><span class="green">F1(зеленый)</span></p>
+<p><input type="checkbox" class="inp" id="i9" value="512"><span class="red">F2(красный)</span></p>
+
+
+<h2 class="title">Управление выходами ПРМ-1</h2>
+
+<p><input type="checkbox" class="inp" id="k0" value="1"> OUT1</p>
+<p><input type="checkbox" class="inp" id="k1" value="2"> OUT2</p>
+<p><input type="checkbox" class="inp" id="k2" value="4"> OUT3</p>
+<p><input type="checkbox" class="inp" id="k3" value="8"> OUT4</p>
+<p><input type="checkbox" class="inp" id="k4" value="16"> OUT5</p>
+<p><input type="checkbox" class="inp" id="k5" value="32"> OUT6</p>
+<p><input type="checkbox" class="inp" id="k6" value="64"> OUT7</p>
+<p><input type="checkbox" class="inp" id="k7" value="128"> OUT8</p>
+ 
+ <p class="center">
+<input type="button" id="back" value="Back" onclick="location.href='../index.htm'">
+</p>
+
+</div>
+
+</body>
+<script type="text/javascript">
+/*
+var led1;
+var led2;
+var led3;
+var led4;
+
+
+var ind_ai3;
+var ind_ai4;
+*/
+
+
+function setVal(gauge, val) {        
+		gauge.setValueAnimated(parseFloat(val));		
+		}
+
+
+function init() {
+   
+	newAJAXCommand('mdb.xml?start=500&stop=559', updateStatus, true);
+	
+for(i=0;i<10;i++)
+	{ 	
+	
+		if(((~mdbuw522~)&(Math.pow(2, i)))>>i)
+		{		
+		$('#i'+i).prop('checked', true);		
+		}
+		else
+		{
+		$('#i'+i).prop('checked', false);		
+		}
+		
+	}	
+	
+for(i=0;i<8;i++)
+	{ 	
+	
+		if(((~mdbuw523~)&(Math.pow(2, i)))>>i)
+		{		
+		$('#k'+i).prop('checked', true);		
+		}
+		else
+		{
+		$('#k'+i).prop('checked', false);		
+		}
+		
+	}		
+	
+	
+
+	$('#int1').val(~mdbuw524~);
+	$('#temp_int1').val(~mdbuw524~);
+	$('#int2').val(~mdbuw525~);
+	$('#temp_int2').val(~mdbuw525~);
+	
+	$('#float1').val((res(~mdbuw527~, ~mdbuw526~)).toFixed(1));
+	$('#temp_float1').val((res(~mdbuw527~, ~mdbuw526~)*100).toFixed(1));
+	$('#float2').val((res(~mdbuw529~, ~mdbuw528~)).toFixed(1));
+	$('#temp_float2').val((res(~mdbuw529~, ~mdbuw528~)*100).toFixed(1));
+	
+	
+	
+	var sections = [steelseries.Section(0, 4000, 'rgba(0, 0, 220, 0.3)'),
+                      //  steelseries.Section(25, 50, 'rgba(0, 220, 0, 0.3)'),
+                        steelseries.Section(4000, 5000, 'rgba(220, 220, 0, 0.3)')];
+	
+	 var areas = [steelseries.Section(4000, 10000, 'rgba(220, 0, 0, 0.3)')];
+	
+	ind_ai1 = new steelseries.Radial('ai1_r', {
+                            gaugeType: steelseries.GaugeType.TYPE4,
+                            size: 600,
+							minValue: 0,                                      // minimum value
+							maxValue: 10000, 
+							
+                            section: sections,
+                            area: areas,
+                            titleString: "Сопротивление AI1",
+                            unitString: "Ом",
+                            threshold: 4000,
+							playAlarm: true,
+							alarmSound: true,
+                            //lcdVisible: true,
+                            lcdDecimals: 1
+                            //useOdometer: true,                           
+                            });
+	
+	ind_ai2 = new steelseries.Radial('ai2_r', {
+                            gaugeType: steelseries.GaugeType.TYPE4,
+                            size: 600,
+							minValue: 0,                                      // minimum value
+							maxValue: 10000, 
+							
+                            section: sections,
+                            area: areas,
+                            titleString: "Сопротивление AI2",
+                            unitString: "Ом",
+                            threshold: 4000,
+							playAlarm: true,
+							alarmSound: true,
+                            //lcdVisible: true,
+                            lcdDecimals: 1
+                            //useOdometer: true,                           
+                            });
+	
+	
+	ind_ai3 = new steelseries.Radial('ai3_r', {
+                            gaugeType: steelseries.GaugeType.TYPE4,
+                            size: 500,
+							minValue: 0,                                      // minimum value
+							maxValue: 10000, 
+							
+                            section: sections,
+                            area: areas,
+                            titleString: "Сопротивление AI3 ",
+                            unitString: "Ом",
+                            threshold: 4000,
+							playAlarm: true,
+							alarmSound: true,
+                            //lcdVisible: true,
+                            lcdDecimals: 1
+                            //useOdometer: true,                           
+                            });
+	
+	ind_ai4 = new steelseries.Radial('ai4_r', {
+                            gaugeType: steelseries.GaugeType.TYPE4,
+                            size: 500,
+							minValue: 0,                                      // minimum value
+							maxValue: 10000, 
+							
+                            section: sections,
+                            area: areas,
+                            titleString: "Сопротивление AI4 ",
+                            unitString: "Ом",
+                            threshold: 4000,
+							playAlarm: true,
+							alarmSound: true,
+                            //lcdVisible: true,
+                            lcdDecimals: 1
+                            //useOdometer: true,                           
+                            });
+	led1 = new steelseries.Led('din1', {
+                            width: 50,
+                            height: 50
+                            });
+	led2 = new steelseries.Led('din2', {
+                            width: 50,
+                            height: 50
+                            });
+	led3 = new steelseries.Led('din3', {
+							width: 50,
+							height: 50
+							});
+	led4 = new steelseries.Led('din4', {
+							width: 50,
+							height: 50
+							});
+	led5 = new steelseries.Led('din5', {
+                            width: 50,
+                            height: 50
+                            });
+	led6 = new steelseries.Led('din6', {
+                            width: 50,
+                            height: 50
+                            });
+	led7 = new steelseries.Led('din7', {
+							width: 50,
+							height: 50
+							});
+	led8 = new steelseries.Led('din8', {
+							width: 50,
+							height: 50
+							});						
+	
+	
+	led1.setLedColor(steelseries.LedColor.GREEN_LED);
+	led2.setLedColor(steelseries.LedColor.GREEN_LED);
+	led3.setLedColor(steelseries.LedColor.GREEN_LED);
+	led4.setLedColor(steelseries.LedColor.GREEN_LED);
+	led5.setLedColor(steelseries.LedColor.GREEN_LED);
+	led6.setLedColor(steelseries.LedColor.GREEN_LED);
+	led7.setLedColor(steelseries.LedColor.GREEN_LED);
+	led8.setLedColor(steelseries.LedColor.GREEN_LED);
+	
+	
+}
+
+
+function updateStatus(xmlData) {
+
+    var addr = 0;
+	if(!xmlData) return;				
+			
+	z2=getXMLValue(xmlData, 'm515');
+	z1=getXMLValue(xmlData, 'm514');
+			
+	z4=getXMLValue(xmlData, 'm517');
+	z3=getXMLValue(xmlData, 'm516');
+			
+	z6=getXMLValue(xmlData, 'm519');
+	z5=getXMLValue(xmlData, 'm518');
+			
+	z8=getXMLValue(xmlData, 'm521');
+	z7=getXMLValue(xmlData, 'm520');			
+		
+	inp=getXMLValue(xmlData, 'm512');		
+		
+	var result1=int32_float(z2, z1);
+	var result2=int32_float(z4, z3);
+	var result3=int32_float(z6, z5);
+	var result4=int32_float(z8, z7);
+			
+	document.getElementById("ai1").value = parseFloat(result1).toFixed(1);
+	document.getElementById("ai2").value = parseFloat(result2).toFixed(1);
+	document.getElementById("ai3").value = parseFloat(result3).toFixed(1);
+	document.getElementById("ai4").value = parseFloat(result4).toFixed(1);	
+
+	setVal(ind_ai1 , parseFloat(result1).toFixed(1));
+	setVal(ind_ai2 , parseFloat(result2).toFixed(1));
+	setVal(ind_ai3 , parseFloat(result3).toFixed(1));
+	setVal(ind_ai4 , parseFloat(result4).toFixed(1));
+	
+	
+	
+	if(((inp)&(Math.pow(2, 0)))>>0)
+	{		
+	led1.setLedOnOff(true);
+	}
+	else
+	{		
+	led1.setLedOnOff(false);
+	}
+	
+	if(((inp)&(Math.pow(2, 1)))>>1)
+	{		
+	led2.setLedOnOff(true);
+	}
+	else
+	{		
+	led2.setLedOnOff(false);
+	}	
+	if(((inp)&(Math.pow(2, 2)))>>2)
+	{		
+	led3.setLedOnOff(true);
+	}
+	else
+	{		
+	led3.setLedOnOff(false);
+	}	
+	if(((inp)&(Math.pow(2, 3)))>>3)
+	{		
+	led4.setLedOnOff(true);
+	}
+	else
+	{		
+	led4.setLedOnOff(false);
+	}
+	
+	if(((inp)&(Math.pow(2, 4)))>>4)
+	{		
+	led5.setLedOnOff(true);
+	}
+	else
+	{		
+	led5.setLedOnOff(false);
+	}
+	
+	if(((inp)&(Math.pow(2, 5)))>>5)
+	{		
+	led6.setLedOnOff(true);
+	}
+	else
+	{		
+	led6.setLedOnOff(false);
+	}
+	
+	if(((inp)&(Math.pow(2, 6)))>>6)
+	{		
+	led7.setLedOnOff(true);
+	}
+	else
+	{		
+	led7.setLedOnOff(false);
+	}
+	
+	if(((inp)&(Math.pow(2, 7)))>>7)
+	{		
+	led8.setLedOnOff(true);
+	}
+	else
+	{		
+	led8.setLedOnOff(false);
+	}
+	
+	
+	
+	for(i=0;i<8;i++)
+	{ 	
+	 
+	 var elem = document.querySelector('#i'+i);
+
+	 
+		if(((~mdbuw512~)&(Math.pow(2, i)))>>i)
+		{		
+//		$('#i'+i ).prop('checked', true);
+		elem.setAttribute("checked", "checked")
+//$("input[type=checkbox]").prop('checked', true)		
+		}
+		else
+		{
+		elem.removeAttribute("checked");
+//$("input[type=checkbox]").prop('checked', false)		
+//		$('#i'+i ).prop('checked', false);		
+		}
+		
+	}	
+	
+	
+}
+
+
+function res(x1, x0)
+{
+			var value = x1<<16 | x0;
+			var b=value & 0x7fffff;
+			var e=((value>>23) & 0xff)-127;
+			var m=1+b*Math.pow(2, -23);
+			var result=m*Math.pow(2, e);
+			if (value & 0x80000000) {
+			result=-result;
+			}	
+			return result
+}
+
+
+
+
+function tomodbus(addr, type, id) {
+
+	if(type==0) //INT
+	{
+	 t = (document.getElementById(id).value);	
+	var bin0=t&0xFFFF;   
+	newAJAXCommand('/web.cgi?mdbw'+addr+'='+bin0);
+	}
+	if(type==1) //FLOAT
+	{
+	var view = new DataView(new ArrayBuffer(4));
+    t = (document.getElementById(id).value)/100;
+	view.setFloat32(0, t);    
+	bin=view.getInt32(0).toString(10);
+	var bin1=(bin&0xFFFF0000)>>16;
+	var bin0=bin&0xFFFF;   
+	newAJAXCommand('/web.cgi?mdbw'+addr+'='+bin0);	        
+	newAJAXCommand('/web.cgi?mdbw'+(addr+1)+'='+bin1);
+	
+	}
+
+   }
+
+
+   
+   
+
+ function float_to_reg(val, r1, r0) {
+	var view = new DataView(new ArrayBuffer(4));	
+	view.setFloat32(0, val);    
+	bin=view.getInt32(0).toString(10);
+	var bin1=(bin&0xFFFF0000)>>16;
+	var bin0=bin&0xFFFF;    
+	newAJAXCommand('/web.cgi?mdbw'+r1+'='+bin1);
+	newAJAXCommand('/web.cgi?mdbw'+r0+'='+bin0);
+   }  
+   
+
+
+jQuery(function($) {
+	
+
+	
+    
+	
+	$( ".inp" ).bind( "click", function() { 	;
+	out1=0;
+	out2=0;
+	sum=0;
+	
+	for(i=0;i<10;i++)
+	{ 	elem=document.getElementById("i"+i); 
+		if(elem.checked)
+		out1=out1+parseInt(elem.value);		
+	}
+	
+	for(i=0;i<8;i++)
+	{ 	elem=document.getElementById("k"+i); 
+		if(elem.checked)
+		out2=out2+parseInt(elem.value);
+	}
+	
+	
+	
+	
+	newAJAXCommand('/web.cgi?mdbw522='+out1+'&mdbw523='+out2); 
+	//newAJAXCommand('/web.cgi?mdbw523'+'='+(sum&0x3FC00)>>10); 
+
+	})
+	
+	
+	$("#temp_float1").change(function(){	
+	//alert($(this).val());
+	//tomodbus(526, 1, $(this).attr('id'))
+	float_to_reg($(this).val()/100, 527, 526)	
+	document.getElementById("float1").value = parseFloat($(this).val()/100).toFixed(2);	
+	});
+	
+	$("#temp_float2").change(function(){	
+	//alert($(this).val());
+	//tomodbus(528, 1, $(this).attr('id'))
+	float_to_reg($(this).val()/100, 529, 528)	
+	document.getElementById("float2").value = parseFloat($(this).val()/100).toFixed(2);	
+	})
+	
+	
+	$("#temp_int1").change(function(){	
+	//alert($(this).val());
+	tomodbus(524, 0, $(this).attr('id'))	
+	document.getElementById("int1").value = parseFloat($(this).val()/1).toFixed(0);	
+	});
+	
+	$("#temp_int2").change(function(){	
+	//alert($(this).val());
+	tomodbus(525, 0, $(this).attr('id'))	
+	document.getElementById("int2").value = parseFloat($(this).val()/1).toFixed(0);	
+	});
+	
+
+});
+
+</script></html>

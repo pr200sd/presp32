@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<title>Demo</title>
+	
+    <script src="../lib/jquery-2.1.4.min.js"></script>
+    <script src="../lib/jquery-ui.min.js"></script>
+    <script src="../lib/knockout-2.2.1.js"></script>
+	<script src="../lib/scripts.js"></script>
+	<script src="../lib/site.js"></script>	
+    <script src="../lib/sevenSeg.js"></script>
+
+	
+
+<style>
+	*
+	{
+		height: 100%;
+	}
+
+	body
+	{
+		margin: 0;
+		overflow: hidden;
+	}
+</style>
+	
+	
+</head>
+
+<body>
+    <div id="testResizableArray"></div>
+	 
+
+<script type="text/javascript">	
+$(function () {
+    var viewModel = { 
+        testValue2: ko.observable(0)
+    };
+    ko.applyBindings(viewModel);	 
+	
+	
+	$("#testResizableArray").sevenSeg({ digits: 9 });	
+	
+	function updateStatus(xmlData) {
+	//INT32=(INT550|(INT551<<16))	
+	value=((getXMLValue(xmlData, 'm2'))|((getXMLValue(xmlData, 'm3'))<<16)); 	
+	 $("#testResizableArray").sevenSeg({ value: value });
+	}
+	
+	function update() {
+	newAJAXCommand('mdb.xml?start=2&stop=4', updateStatus, true);	};	
+	
+	update();
+ 
+    window.prettyPrint && prettyPrint();
+});
+	
+	
+	
+	
+	
+	
+	
+</script>	
+	
+</body>
+</html>

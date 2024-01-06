@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html><head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>ПР200 Modbus</title>	
+	<link rel="stylesheet" href="../style.css">
+	<script src="../lib/scripts.js"></script>
+	<script src="../lib/site.js"></script>	
+	<script src="../lib/jquery-2.1.4.min.js"></script>
+	<script src="../lib/jquery-ui.min.js"></script>	
+	<link href="../lib/jquery-ui.css" rel="stylesheet"/>
+	
+</head><body onload="init()">
+~inc:menu.inc~
+
+<div class="content">
+				<div class="show-arhiv">				 
+				<h2 class="title">Настройка запросов</h2>
+				</div>  				
+				
+<div class="cfg-arhiv" >		
+				 <form action="#" method="POST" name="zayavka" class="zayavka">		
+
+				</form>					
+</div>
+
+
+<h2 id="mr"" class="title">Modbus Requests</h2>
+<table id="trnt" class="mdbtab">
+<tr><th>Name</th></tr>
+</table>
+
+<p class="center">
+<table id="mbwr">
+   <tr>
+   	<td>Write addr, word:</td>	
+   	<td><input type="text" id="mdbwaddr" size="12" maxlength="6" value="512"></td>
+   	<td><input type="text" id="mdbwdata" size="12" maxlength="32" value="0x00"></td>	
+   	<td><input type="button" onClick="newAJAXCommand('/web.cgi?mdbw'+document.getElementById('mdbwaddr').value+'='+document.getElementById('mdbwdata').value)" value="Write" class="button"></td>
+   </tr>
+   <tr>
+   	<td>Write addr, dword:</td>	
+   	<td><input type="text" id="mdbdaddr" size="12" maxlength="6" value="512"></td>
+   	<td><input type="text" id="mdbddata" size="12" maxlength="32" value="0x00"></td>
+   	<td><input type="button" onClick="newAJAXCommand('/web.cgi?mdbd'+document.getElementById('mdbdaddr').value+'='+document.getElementById('mdbddata').value)" value="Write" class="button"></td>
+   </tr>
+   
+</table>
+</p>
+</div>
+
+<div class="content">
+<h2 class="title">Modbus Data</h2>
+
+<table id="tbls" class="mdbtab">
+<tr><th>INT</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th>
+</table>
+
+</div>
+~inc:footer.inc~
+</body>
+
+<style type="text/css">
+	.cfg-arhiv
+	{
+    background-color: #a7aab8;
+    border:3px solid #18a0af;
+    display:none;
+	}
+  
+	#trnt, #mr, #mbwr
+	{
+	display:none;
+	}
+  
+	.show-arhiv 
+	{
+    cursor: pointer;
+    background-color: #ffffff;
+	}
+	.show-arhiv:hover
+	{
+    color:#0022e6;
+	}
+</style>
+
+<script type="text/javascript">
+
+var	disp=new Array("INT","FLOAT","FLOAT INV","HEX");
+
+var	arr_sel0=new Array(			
+			{"val":"0","text":""},
+			{"val":"1","text":"03(4x)"},
+			{"val":"2","text":"04(3x)"},
+			{"val":"3","text":"06"},
+			{"val":"4","text":"16(0x10)"}			
+	);
+var	arr_sel1=new Array(			
+			{"val":"0","text":""},
+			{"val":"1","text":"1"},
+			{"val":"2","text":"2"},
+			{"val":"3","text":"3"},
+			{"val":"4","text":"4"},
+			{"val":"5","text":"5"},
+			{"val":"6","text":"6"},
+			{"val":"7","text":"7"},
+			{"val":"8","text":"8"},
+			{"val":"9","text":"10"},
+			{"val":"10","text":"15"},
+			{"val":"11","text":"20"},
+			{"val":"12","text":"64"}			
+	);		
+var	arr_sel2=new Array(	
+			{"val":"0","text":"off"},
+			{"val":"1","text":"20 ms "},
+			{"val":"2","text":"100 ms "},
+			{"val":"3","text":"200 ms "},
+			{"val":"4","text":"500 ms "},
+			{"val":"5","text":"1s "},
+			{"val":"6","text":"2s "},
+			{"val":"7","text":"5s "},
+			{"val":"8","text":"10s "}						
+	);
+
+var rownames = ["StartFlag","ID","Command","Number","ExtAddr","IntAddr","Timer","Errors","FifoCount"];
+var rowval = [1,-1,-1,-1,-1,-1,0,0,-1];
+var trns=~mdb_trns~;
+var trna=~mdb_trna~;
+
+var rmbset = ["Function","Number","Addr_PR","Addr_WEB","tscan","Set"];
+
+var x0 = [];
+var x1 = [];
+
+
+var regim;
+
+
+
+function init(){
+CreateTableTrn();
+CreateTableMdb();
+
+//CreateTableMbSet();
+//third(10);
+//document.body.appendChild(table3);
+}
+
+function CreateTableTrn() {
+	t=document.all.trnt;
+	for(x=0;x<trns;x++)
+	{
+	t.rows[0].insertCell(x+1).innerHTML='<b>Trn'+x+'</b>';	
+	}
+	for(i=0;i<rownames.length;i++){
+		r=t.insertRow();r.insertCell(0).innerHTML='<b>'+rownames[i]+'</b>';
+				
+		for(x=0;x<trns;x++){
+			c=r.insertCell(x+1);
+
+			c.innerText=' ';
+			c.style.backgroundColor = "#d5e2c5";
+			if(rowval[i]>=0) {
+				c.idx=trna+x*10+i;
+				c.wrval=rowval[i];
+				c.onclick=function(){newAJAXCommand('/web.cgi?mdbw'+this.idx+'='+this.wrval)};c.className='s';	
+				c.style.color = "blue";				
+				}
+			else
+			{
+			c.style.color = "green";
+			}
+
+				
+			}
+		}
+	newAJAXCommand('mdb.xml?start='+trna+'&stop='+(trna+trns*10-1),updateStatus,true);	
+	}	
+
+function CreateTableMdb() {
+    var addr = 500;
+	for(i = 0; i < 9; i++){
+		r=document.all.tbls.insertRow();
+		(r.insertCell(0)).innerText=addr;
+		
+		for(x = 1; x < 11; x++)
+		(r.insertCell(x)).innerText='x';
+		r.style.backgroundColor = "#ed9d57";		
+		k = document.all.tbls.rows[0].cells[0];		
+			
+		addr+=10;		
+	}	
+	for(i = 9; i < 10; i++){
+		r=document.all.tbls.insertRow();
+		(r.insertCell(0)).innerText=addr;
+		
+		for(x = 1; x < 11; x++)
+		(r.insertCell(x)).innerText='x';
+		r.style.backgroundColor = "#0a6821";		
+		addr+=10;		
+	}	
+	
+	k.onclick=function()
+	{
+	  regim++; if(regim>3)regim=0;};
+	
+	newAJAXCommand('mdb.xml?start=500&stop=600', updateStatus1, true);
+}
+
+function CreateTableMbSet() {
+	t=document.all.mrs;
+	
+	r=document.all.mrs.insertRow();
+	
+	
+	for(i=0;i<1;i++){
+		r=t.insertRow();		
+		r.insertCell(0).innerHTML='<b>'+rmbset[i]+'</b>';	
+		
+		for(x = 1; x < rmbset.length; x++)
+		(r.insertCell(x)).innerHTML='<b>'+rmbset[x]+'</b>';		
+		
+		r.style.backgroundColor = "#ed9d57";					
+		
+		}
+	
+		for(i=0;i<10;i++){
+r=document.all.mrs.insertRow();
+	
+for(x = 1; x < rmbset.length; x++)
+		r=t.insertRow();		
+		r.insertCell(x*0).innerHTML=Drow_select(i, 'com','Функция ModBus',arr_sel0);
+		r.insertCell(x*1).innerHTML=Drow_select(i, 'col','Количество регистров чт/зп',arr_sel1);
+		r.insertCell(2).innerHTML=Drow_inputn(i,'exadr','Адрес регистра Modbus ПР');
+		r.insertCell(3).innerHTML=Drow_inputn(i,'inadr','Адрес регистра в плате');
+		r.insertCell(4).innerHTML=Drow_select(i, 'tim','Период опроса',arr_sel2);
+		r.insertCell(5).innerHTML=Drow_inputb(i,'en','Записать');
+		r.style.backgroundColor = "#ed9d57";		
+		}
+	
+}	
+
+function third(j){
+
+	var table = document.createElement('table');
+	var str="";
+	for (var i = 1; i < j; i++) {
+	      str+="<td></td>";
+	}
+	table.innerHTML=str;
+	table3=table;
+}
+
+
+function updateStatus(xmlData){
+	if(!xmlData)return;
+	for(i=0;i<rownames.length;i++){
+		s=document.all.trnt.rows[i+1]; 
+		for(x=0;x<trns;x++)s.cells[x+1].innerText=getXMLValue(xmlData,'m6'+x+i);
+		}	
+}	
+
+function updateStatus1(xmlData1) {
+    var addr = 500;
+	if(!xmlData1) return;
+	
+	v = document.all.tbls.rows[0];	
+	v.cells[0].innerText=disp[regim];
+	
+	
+	for(i = 0; i < 10; i++){	
+		
+		s = document.all.tbls.rows[i+1];
+		h = document.all.tbls.rows[0];
+		 
+		for(x = 1; x < 11; x++) {	
+
+	
+	regim=regim&3;
+	
+// INT		
+	if(regim==0)	
+	{	
+	
+			val=getXMLValue(xmlData1, 'm'+addr);
+			s.cells[x].innerText=val;			
+			s.cells[x].title='0x'+eval(val).toString(16);
+	}
+// float
+	if(regim==1)
+	{	
+
+			x1[x]=(getXMLValue(xmlData1, 'm'+addr));	
+			x0[x]=(getXMLValue(xmlData1, 'm'+addr+1));
+			val=int32_float(x1[x], x0[x]).toFixed(5) ;				
+			
+			
+			if((!(x%2)))
+			{
+            
+            s.cells[x-1].style.visibility = "visible";
+			h.cells[x-1].style.visibility = "visible";			
+			s.cells[x-1].innerText=val;			
+			}
+			else{		
+					
+			s.cells[x+1].style.visibility = "hidden";
+			h.cells[x+1].style.visibility = "hidden";     
+			 			
+			}	
+}
+			
+// float Inverse			
+			if(regim==2)
+			{
+			x1[x]=(getXMLValue(xmlData1, 'm'+addr));	
+			x0[x]=(getXMLValue(xmlData1, 'm'+addr+1));
+			val=int32_float(x1[x], x0[x]).toFixed(5) ;		
+			
+			if((x%2))			
+			{				
+			s.cells[x-0].style.visibility = "visible";
+			h.cells[x-0].style.visibility = "visible";			
+			s.cells[x-0].innerText=val;				
+			}
+			else{					
+			s.cells[x+0].style.visibility="hidden";
+			h.cells[x+0].style.visibility="hidden";		
+			}
+	}
+// INT HEX
+    if(regim==3)	
+	{	
+	
+	
+	
+			s.cells[x].style.visibility = "visible";
+			h.cells[x].style.visibility = "visible";
+	
+			val=getXMLValue(xmlData1, 'm'+addr);	
+			s.cells[x].innerText='0x'+eval(val).toString(16);			
+			s.cells[x].title='0x'+eval(val).toString(16);
+	}	
+			
+			addr++;			
+		}
+	}
+}
+/*
+$("select[id^='com']").change(function() 
+{	
+	var ch= Number($(this).attr("id").replace(/\D+/g,""));		
+	var com= $("#com"+ch).val();	
+	if(com==3)
+	{
+	$('#col'+ch).val(1);		//для 6 команды 1 регистр для записи
+	}
+	alert(com);
+});
+
+$("input[id^='exadr']").change(function() 
+{
+	var ch= Number($(this).attr("id").replace(/\D+/g,""));	
+	var adr= $("#exadr"+ch).val();		
+	$('#inadr'+ch).val(adr);		//по умолчанию внешний равен внутр.	
+});
+*/
+//Рисование селектора
+	function Drow_select(n,id,title,arr){
+	var out;
+		out='<select id="'+id+n+'" title="'+title+'">';			
+					for (i=0;i<arr.length;i++){
+						out+='<option value="'+arr[i].val+'">'+arr[i].text+'</option>';
+					}
+	out+=	'</select>';
+		return out;
+	}
+
+//Рисование инпута "number"
+	function Drow_inputn(n,id,title){
+	var out;				
+		out='<input type="number"  style="width: 50px;"  id="'+id+n+'" name="'+id+''+n+'" title="'+title+'"/>';		
+		return out;	
+	}	
+//Рисование инпута "button"
+	function Drow_inputb(n,id,title){
+	var out;				
+		out='<input type="button"  style="width: 50px;"  id="'+id+n+'" name="'+id+n+'" value="Write" title="'+title+'"/>';		
+		return out;	
+	}	
+	
+//Рисование формы Events
+	function Mbset_page(N){
+		html='';
+		html+='<FORM ACTION="#"	  method="POST" name="zayavka" class="zayavka" >';	
+		for (n=0;n<10;n++){
+		html+='['+n+'] F';
+		html+=Drow_select(n, 'com','Функция ModBus',arr_sel0);
+		html+=' q';
+		html+=Drow_select(n, 'col','Количество регистров чт/зп',arr_sel1);
+		html+=' addrПР';
+		html+=Drow_inputn(n,'exadr','Адрес регистра Modbus ПР');
+		html+=' addrWEB';
+		html+=Drow_inputn(n,'inadr','Адрес регистра в плате');
+		html+=' t';
+		html+=Drow_select(n, 'tim','Период опроса',arr_sel2);
+		html+=' ->';
+		html+=Drow_inputb(n,'en','Записать');
+		html+='<br>';
+		}
+		html+='</FORM>';		
+		return html;
+	}	
+		
+	
+//загрузка страницы
+$(document).ready(function() {	
+	
+var lcd_trn = [];
+
+lcd_trn[0]= ~lcd_trn0~;
+lcd_trn[1]= ~lcd_trn1~;
+lcd_trn[2]= ~lcd_trn2~;
+lcd_trn[3]= ~lcd_trn3~;
+lcd_trn[4]= ~lcd_trn4~;
+lcd_trn[5]= ~lcd_trn5~;
+lcd_trn[6]= ~lcd_trn6~;
+lcd_trn[7]= ~lcd_trn7~;
+lcd_trn[8]= ~lcd_trn8~;
+lcd_trn[9]= ~lcd_trn9~;	
+
+$('.cfg-arhiv').append(Mbset_page(10));	
+
+for (var i = 0; i < 10; i++)
+{
+
+lcd_trn[i]>>>0;
+
+$('#com'+i).val(Math.abs(((lcd_trn[i])&(0xE0000000))>>29));
+$('#col'+i).val(((lcd_trn[i])&(0x1E000000))>>25);
+$('#exadr'+i).val(((lcd_trn[i])&(0x01FFF800))>>11);
+$('#inadr'+i).val((((lcd_trn[i])&(0x000007F0))>>4)+500);
+$('#tim'+i).val(((lcd_trn[i])&(0x0000000F)));
+
+}	
+
+ $('.show-arhiv').click(function()
+	 {	 
+	 $('.cfg-arhiv').fadeToggle( "slow", "linear" );	 
+	 $('#trnt').fadeToggle( "slow", "linear" );
+	 $('#mr').fadeToggle( "slow", "linear" );
+	 $('#mbwr').fadeToggle( "slow", "linear" );
+	 }); 
+
+$('input[title="Записать"]').on( "click", function()
+ {	                
+				var ch= Number($(this).attr("id").replace(/\D+/g,""));	
+
+				
+				var cfg=((($("#com"+ch).val()&0x07)<<29)>>>0)+(($("#col"+ch).val()&0x0F)<<25)+(($("#exadr"+ch).val()&0x3FFF)<<11)+((($("#inadr"+ch).val()-500)&0x7F)<<4)+(($("#tim"+ch).val()&0xF));	
+//alert(cfg);
+				
+				cfg=cfg>>>0;
+//alert(cfg);				
+				$.ajax({
+					type: 'GET',
+					url: "../web.cgi?lcd_trn"+ch+"="+cfg+"&lcd_save=1&cfg_save=1",
+					async: true,
+					timeout: 1000,
+					success: function (data) {
+						
+					},
+					error: function (data) {
+						
+					}
+				}); 				           		
+ })	
+
+
+$("select[id^='com']").change(function() 
+{	
+	var ch= Number($(this).attr("id").replace(/\D+/g,""));		
+	var com= $("#com"+ch).val();	
+	if(com==3)
+	{
+	$('#col'+ch).val(1);		//для 6 команды 1 регистр для записи
+	}	
+});
+
+$("input[id^='exadr']").change(function() 
+{
+	var ch= Number($(this).attr("id").replace(/\D+/g,""));	
+	var adr= $("#exadr"+ch).val();		
+	$('#inadr'+ch).val(adr);		//по умолчанию внешний равен внутр.	
+});
+ 
+	
+	
+});		
+	
+</script>
+</html>

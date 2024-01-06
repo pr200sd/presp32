@@ -1,0 +1,863 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	<title>PRESP32</title> 	
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	
+	<link rel="stylesheet" href="style.css">	
+	
+<!--	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">	-->
+	<link rel="stylesheet" href="/lib/jquery.mobile-1.4.5.min.css">
+	
+	<script src="/lib/scripts.js"></script>
+	<script src="/lib/site.js"></script>		
+	
+	<script src="/lib/jquery-2.1.4.min.js"></script>
+	<script src="/lib/jquery-ui.min.js"></script>	
+	<link rel="stylesheet" href="/lib/jquery-ui.css">
+
+	<script src="/lib/steelseries-min.js"></script>	
+	<script src="/lib/tween-min.js"></script>
+    <link href="/lib/roundslider.min.css" rel="stylesheet"/>
+    <script src="/lib/roundslider.min.js"></script>	
+	
+	<script src="/lib/jquery.mobile-1.4.5.min.js"></script>
+	
+	
+</head> 
+<style> 
+html
+{
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+body
+{
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+} 
+ 
+#sen-popup
+{ 
+	width:100% !important;	  
+}
+
+
+.invert
+{
+	-webkit-filter: invert(1);
+	filter: invert(1);
+}
+
+<!--
+#lcd, #reg1, #sen
+{
+	overflow: auto;     
+	position: fixed;
+	width:100%;  
+}
+
+ 
+
+ 
+.rs-path-color {
+  background: #bcbcbc;
+}
+.rs-bar .rs-seperator {
+  border-color: #ffffff;
+  margin-left: 16px;
+}
+.rs-tooltip-text {
+  font-size: 32px;
+  color: #0097bd;
+}
+.rs-handle-dot {
+  padding: 11px;
+}
+.rs-handle-dot:after {
+  background-color: #000000;
+}
+span.rs-number {
+  position: absolute;
+  top: -8px;
+  left: 36px;
+  font-family: Segoe UI;
+  font-size: 10px;
+}
+.rs-bar.rs-start .rs-seperator,
+.rs-bar.rs-end .rs-seperator {
+  display: none;
+}
+
+.rslider {
+  display: inline-block;
+  margin-top: 40%;
+  margin-left: 40%;
+}
+
+#back
+{	
+	margin-left:auto;
+    margin-right:auto;
+	width: 100%;
+	margin-bottom:20px;	
+}	
+.btn-shed {
+    font-size:22px;
+    color:#fff;
+    background-color:#555;
+    cursor:pointer;
+    text-decoration:none;
+    border:0;
+	padding-top:10px;
+    padding-bottom:10px;	
+	margin-right:-3px;    
+}
+
+.btn-left {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.btn-right {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+ -->
+</style>
+ 
+
+<body>
+
+
+<div data-role="page" id="main" data-add-back-btn="true" data-theme="a">
+	<div data-role="header">
+		<h2>PRESP32</h2>		
+	</div>
+	
+<div data-role="content">		
+	<div id="logo1"><img style="width: 100%;"  id="logo"  src="logo/PR_SD.png"/></div>	
+	
+	<p><a href="#pop1" data-rel="popup" data-transition="pop" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-info ui-btn-icon-notext" title="Learn more">Описание</a></p>
+	<div data-role="popup" id="pop1" class="ui-content" data-theme="a" style="max-width:100%;"> 
+	<p><a href="https://www.youtube.com/channel/UCj4HeZMvSH5H3d_t6iDlQOQ">YOUTUBE</a></p>
+	</div>
+	
+
+	
+</div>		
+	
+<div data-role="collapsibleset" id="clps"  data-content-theme="a" >    	<!--Основное меню-->
+
+
+	<div data-role="collapsible" id="count">							<!--Счетчики тест-->
+		<h3>Измерение расхода(DEMO)</h3>	 
+		
+	<p><a href="#Info1" data-rel="popup" data-transition="pop" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-info ui-btn-icon-notext" title="Learn more">Описание</a></p>
+	<div data-role="popup" id="Info1" class="ui-content" data-theme="a" style="max-width:100%;">
+	<p>Страница отображает состояние регистра с адресом 512 в формате с плавающей запятой [512, 513] </p>	
+	</div>		
+		
+	<td class="label">Счетчик №1</td>		
+	<canvas id="od0" align="center" width="auto" height="90"></canvas>	
+	</div>
+
+	<div data-role="collapsible" id="output">							<!--Управление битами-->
+		<h3>Управление битами(DEMO)</h3>
+	
+	<p><a href="#Info22" data-rel="popup" data-transition="pop" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-info ui-btn-icon-notext" title="Learn more">Описание</a></p>	
+	<div data-role="popup" id="Info22" class="ui-content" data-theme="a" style="max-width:100%;">
+	<p>Переход на страницы для управления битами сетевых регистров.
+	Используются регистры [512-513].		
+	</p>	
+	</div>		
+		<a href='/but/index.html'  data-ajax="false"><input type='submit' value='Переключатели 1' class="button"></a>	
+		<a href='/but/index2.html'  data-ajax="false"><input type='submit' value='Переключатели 2' class="button"></a>
+		<a href='/but/index3.html'  data-ajax="false"><input type='submit' value='Переключатели 3' class="button"></a>
+		<a href='/but/index4.html'  data-ajax="false"><input type='submit' value='Переключатели 4' class="button"></a>				
+	</div>
+
+	<div data-role="collapsible" id="output">							<!--Стелочные индикаторы-->
+		<h3>Стрелочные индикаторы(DEMO)</h3>
+	
+	<p><a href="#Info23" data-rel="popup" data-transition="pop" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-info ui-btn-icon-notext" title="Learn more">Описание</a></p>	
+	<div data-role="popup" id="Info23" class="ui-content" data-theme="a" style="max-width:100%;">
+	<p>Переход на страницы отображения регистров при помощи стрелочных индикаторов.
+	Используются регистры [F512, F514].		
+	</p>	
+	</div>		
+		<a href='/protect/power.html'  data-ajax="false"><input type='submit' value='Индикатор 1' class="button"></a>				
+	</div>
+	
+	<div data-role="collapsible" id="sheduler">							<!--Планировщик-->
+		<h3>Планировщик(DEMO)</h3>
+	
+	<p><a href="#Info2" data-rel="popup" data-transition="pop" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-info ui-btn-icon-notext" title="Learn more">Описание</a></p>	
+	<div data-role="popup" id="Info2" class="ui-content" data-theme="a" style="max-width:100%;">
+	<p>Переход на страницу задания расписания для управление выходным реле.
+	Используются регистры [512-517] для задания расписания времени вкл/выкл,
+	и 518 для задания дня недели, и считывания тукущего сотояния модуля.
+    Аналог макроса <a href="http://ftp-ow.owen.ru/softupdate/OWEN%20Logic/OnlineMacroes/DATE_TIME/CLOCK_WEEK.pdf">CLOCK_WEEK</a>,
+	с расширенными возможностями.	
+	</p>	
+	</div>		
+		
+		
+		
+	<a href='/protect/sheduler.html'  data-ajax="false"><input type='submit' value='Планировщик' class="button"></a>	
+	</div>
+	
+	<div data-role="collapsible" id="zadat">							<!--Задатчик-->
+		<h3>Задатчик(DEMO)</h3> 
+		
+	<p><a href="#Info3" data-rel="popup" data-transition="pop" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-info ui-btn-icon-notext" title="Learn more">Описание</a></p>	
+	<div data-role="popup" id="Info3" class="ui-content" data-theme="a" style="max-width:100%;">
+	<p>Переход на страницу задания регистра INT 530 с помощью кгугового задатчика.	
+	</p>	
+	</div>		 
+	<a href='/protect/slider_time.html'  data-ajax="false"><input type='submit' value='Задатчик1' class="button"></a>
+	<a href='/protect/slider3.html'  data-ajax="false"><input type='submit' value='Задатчик2' class="button"></a>
+	<a href='/protect/demo.html'  data-ajax="false"><input type='submit' value='Задатчик3' class="button"></a>
+	<a href='/protect/slider_time2.html'  data-ajax="false"><input type='submit' value='Термостат' class="button"></a>
+	</div>
+
+	<div data-role="collapsible" id="smi">							<!--Вывод на индикаторы-->
+		<h3>Индикаторы(DEMO)</h3> 
+		
+	<p><a href="#Info5" data-rel="popup" data-transition="pop" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-info ui-btn-icon-notext" title="Learn more">Описание</a></p>	
+	<div data-role="popup" id="Info5" class="ui-content" data-theme="a" style="max-width:100%;">
+	<p>Вывод данных на семисегментные индикаторы.	
+	</p>	
+	</div>		 
+	<a href='/protect/smi.html'  data-ajax="false"><input type='submit' value='Индикатор1' class="button"></a>
+	<a href='/protect/smi2.html'  data-ajax="false"><input type='submit' value='Индикатор3' class="button"></a>
+	 
+	</div>
+	
+	<div data-role="collapsible" id="pchv">							<!--Вывод на индикаторы-->
+		<h3>ПЧВ(DEMO)</h3> 
+		
+	<p><a href="#Info6" data-rel="popup" data-transition="pop" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-info ui-btn-icon-notext" title="Learn more">Описание</a></p>	
+	<div data-role="popup" id="Info6" class="ui-content" data-theme="a" style="max-width:100%;">
+	<p>Управление ПЧВ.	
+	</p>	
+	</div>		 
+	<a href='/protect/pchv.html'  data-ajax="false"><input type='submit' value='Управление ПЧВ' class="button"></a>	 
+	</div>
+	
+	
+	<div data-role="collapsible" id="sens">								<!--Датчики тест-->
+		<h3>Датчик температуры(DEMO)</h3>
+		
+	<p><a href="#Info4" data-rel="popup" data-transition="pop" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-info ui-btn-icon-notext" title="Learn more">Описание</a></p>	
+	<div data-role="popup" id="Info4" class="ui-content" data-theme="a" style="max-width:100%;">
+	<p>Демонстрация чтения и отображения сетевых регистров с адресами [512-515] в целочисленном формате
+	с одним знаком после запятой. <br/>
+	Пример: <br />
+			125=12,5°С   0x0000 0000 0111 1101<br/>
+			32 893=-12,5°С  0x1000 0000 0111 1101<br/>
+			33021=-25,3° 0b1000 0000 1111 1101<br/>
+	Отрицательные числа кодируются установкой в "1" старшего бита регистра
+	</p>	
+	</div>		
+		
+		
+	<p>Узел 1</p>	
+	 <canvas id="idt0" align="center" width="auto" height="90"></canvas>
+	 <canvas id="idt1" align="center" width="auto" height="auto"></canvas>
+	 <canvas id="idt2" align="center" width="auto" height="auto"></canvas>
+	 <canvas id="idt3" align="center" width="auto" height="auto"></canvas> 
+	</div>
+	
+	
+    <div data-role="collapsible" id="mdbdata">							<!--Modbus даные-->
+        <h3>Modbus data</h3>
+		
+<p><a href="#Info10" data-rel="popup" data-transition="pop" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-info ui-btn-icon-notext" title="Learn more">Learn more</a></p>
+<div data-role="popup" id="Info10" class="ui-content" data-theme="a" style="max-width:100%;">
+<p>Отображения регистров Modbus в разных форматах INT, FLOAT, FLOAT_INV, HEX</p> 
+</div>
+		
+		<h2 class="title">Modbus Data</h2>
+		<table id="tbls" class="mdbtab" data-role="table" id="table-custom-2" data-mode="columntoggle" class="ui-body-d ui-shadow table-stripe ui-responsive" data-column-button-theme="b" data-column-button-text="Col" data-column-popup-theme="a">
+			<thead><tr class="ui-bar-d"><th>INT</th><th data-priority="2" id="col0th">0</th><th data-priority="2" id="col1th">1</th><th data-priority="2" id="col2th">2</th><th data-priority="2" id="col3th">3</th><th data-priority="2" id="col4th">4</th><th data-priority="2" id="col5th">5</th><th data-priority="2" id="col6th">6</th><th data-priority="2" id="col7th">7</th><th data-priority="2" id="col8th">8</th><th data-priority="2" id="col9th">9</th></tr></thead>
+		</table>		
+			
+    </div>
+
+		
+</div>	
+	
+
+	<div data-role="footer" class="center">
+		<h6>	 
+		~inc:sys.inc~
+		~inc:time.inc~	
+		Version: ~sys_sysver~
+		</h6>
+		<form  align="left">
+			<div class="ui-field-contain" id="theme-selector">
+				<fieldset data-role="controlgroup" data-theme="b" data-type="horizontal">
+					<legend>Theme:</legend>
+					<input type="radio" name="theme" id="a" value="on" checked="checked">
+					<label for="a">A</label>
+					<input type="radio" name="theme" id="b" value="off">
+					<label for="b">B</label>						
+				</fieldset>			
+			</div>	
+		</form>	
+		
+		<div class="ui-grid-d center">
+<!--		<div class="ui-block-a"><a class="ui-shadow ui-btn ui-corner-all ui-icon-gear ui-btn-icon-notext ui-btn-inline">Button</a></div>
+		<div class="ui-block-b"><a class="ui-shadow ui-btn ui-corner-all ui-icon-arrow-l ui-btn-icon-notext ui-btn-inline">Button</a></div>
+		<div class="ui-block-c"><a class="ui-shadow ui-btn ui-corner-all ui-icon-grid ui-btn-icon-notext ui-btn-inline">Button</a></div>-->
+		<div class="ui-block-d"><a href="indexp.htm" data-ajax="false" class="ui-shadow ui-btn ui-corner-all ui-icon-action ui-btn-icon-notext ui-btn-inline">Button</a></div>
+		<div class="ui-block-e"><a href="indexp.htm" data-ajax="false" class="ui-shadow ui-btn ui-corner-all ui-icon-home ui-btn-icon-notext ui-btn-inline">Button</a></div>
+		</div>			
+		
+	</div>
+	
+</div>
+
+
+
+
+<script type="text/javascript">
+
+var val1;
+
+function res(x1, x0)
+{
+var buffer = new ArrayBuffer(4);
+(new Uint16Array(buffer))[0] = x0;
+(new Uint16Array(buffer))[1] = x1;
+return new Float32Array(buffer)[0];		
+}
+
+
+function updateOdo()													//Обновление счетчика
+{		
+	val1=(res(int513, int512)).toFixed(2);		
+	od0.setValue(val1);	  
+}  
+
+
+
+var data_mdb= null;	//опрос данных модбас 
+ 
+var data_SEN= null; //опрос датчиков ds18b20
+var data_W= null;	//опрос внутренних регистров для DEMO 
+var data_T= null;	//опрос внутренних регистров для DEMO 
+
+var config;
+ 
+ 
+var y;
+var int512;
+var int513; 
+
+var ds_cnt=4;
+var sen_addr=512;
+var tsen = [];	  
+var tds = [];
+ 
+
+config=~sys_config~;
+
+
+$(function(){															//инициализация
+
+
+
+
+/************************************* дабавление виджета t **************************************************************************/
+
+if(ds_cnt>0)
+   {
+   
+		for (var i = 0; i < ds_cnt; i++)
+		{	
+			tsen[i] = new steelseries.Radial('idt'+i, {			
+				gaugeType: steelseries.GaugeType.TYPE4,
+				size: 330,
+				minValue: -50,
+				maxValue: 50,
+				pointerType: steelseries.PointerType.TYPE16,	 
+				foregroundType: steelseries.ForegroundType.TYPE4,
+				frameDesign: steelseries.FrameDesign.ANTHRACITE,
+				backgroundColor: steelseries.BackgroundColor.LIGHT_GRAY,
+				pointerColor: steelseries.ColorDef.BLACK,
+				trendVisible: false,
+				thresholdVisible: false,
+				userLedVisible: true,
+				userLedColor: steelseries.LedColor.BLUE_LED,	
+				maxMeasuredValueVisible: true,	
+				titleString: "T"+i,
+				unitString: "°C",
+				threshold: 30,
+				lcdVisible: true,
+				lcdDecimals: 1
+				}); 						
+		}		
+	}	
+
+
+/******************************************************************************************************************/
+
+
+});
+
+
+
+
+
+var n=0;
+
+var setFormValues = function(form, cfg) {
+	var name, field;
+	for (name in cfg){
+		if (form[name]) {
+			field = form[name];			 
+						
+			if (field[1] && field[1].type === 'checkbox')
+			{
+				field = field[1];				
+			}			
+			if (field.type === 'checkbox'){
+				field.checked = cfg[name] === '1' ? true : false;	
+				 
+				$('input[name='+form[name].value+']').prop("checked",field.checked); 
+				$("input[type='checkbox']").checkboxradio('refresh');				
+			} 		
+
+			
+			if (field.type === 'select-one'){				 
+				
+				$('#'+field.name+'').prop('selectedIndex', cfg[name]);				
+				$('#'+field.name+'-button > span:nth-child(1)').html($('#'+field.name+'-button option:selected').text());				
+			//	alert($('#'+field.name+'-button option:selected').text());
+		 	}			
+			else
+			{			
+				field.value = cfg[name];				
+			}
+		}	
+		 
+	}
+}
+
+
+function CreateTableMdb() {
+ 	 
+}
+
+function get(url)
+{
+	$.ajax({
+			type: 'GET',
+			url: url,
+			async: true,
+			timeout: 1000,
+			success: function (data) {					
+		/*	$("#sent").dialog("open");				
+			html="Запрос успешно отправлен!";			
+			$("#sent").html(html);			
+			$("#sent").fadeOut(2000);			
+			setInterval(function(){$("#sent").dialog("close");},2500);	*/	
+//alert("OK");		
+			},
+			error: function (data) {					
+		/*	$("#sent").dialog("open");				
+			html="Ошибка отправки!";			
+			$("#sent").html(html);			
+			$("#sent").fadeOut(2000);			
+			setInterval(function(){$("#sent").dialog("close");},2500);	*/
+//alert("ERR");			
+			}
+		}); 
+}
+
+function updateStatus(xmlData)
+{	
+	
+}
+
+
+
+
+
+
+$( document ).on( "pagecreate", function() {
+
+	$( "#theme-selector input" ).on( "change", function( event )
+	{
+	var themeClass = $( "#theme-selector input:checked" ).attr( "id" );
+	$( "#main" ).removeClass( "ui-page-theme-a ui-page-theme-b" ).addClass( "ui-page-theme-" + themeClass );
+	$( "#clps" ).removeClass( "ui-page-theme-a ui-page-theme-b" ).addClass( "ui-page-theme-" + themeClass );	
+	$( "#smenu" ).removeClass( "ui-page-theme-a ui-page-theme-b" ).addClass( "ui-page-theme-" + themeClass );
+	$( ".ui-collapsible-content" ).removeClass( "ui-body-a ui-body-b" ).addClass( "ui-body-" + themeClass );	 
+	
+	$( ".ui-li-divider" ).removeClass( "ui-bar-a ui-bar-b" ).addClass( "ui-bar-" + themeClass ); 
+	$( ".ui-li-divider" ).removeClass( "ui-bar-a ui-bar-b" ).addClass( "ui-bar-" + themeClass );
+	$( ".ui-listview" ).removeClass( "data-divider-theme-a data-divider-theme-b" ).addClass( "data-divider-theme-" + themeClass );
+	$( ".ui-collapsible-heading-toggle " ).removeClass( "ui-btn-a ui-btn-b" ).addClass( "ui-btn-" + themeClass );
+	$( ".ui-collapsible-set" ).removeClass( "ui-group-theme-a ui-group-theme-b" ).addClass( "ui-group-theme-" + themeClass );	
+	
+	$( "#log" ).removeClass( "ui-page-theme-a ui-page-theme-b"  ).addClass( "ui-page-theme-" + themeClass );	
+	$( ".theme" ).text( themeClass );
+	
+		var className_a=".ui-page-theme-a";
+		var className_b=".ui-page-theme-b";				
+		if($("#main"+className_b).length>0)
+		{
+		$("#logo").addClass("invert");		
+		}
+		if($("#main"+className_a).length>0)
+		{
+		$("#logo").removeClass("invert");
+		}				
+		
+	});
+
+	
+	
+CreateTableMdb();	
+	
+od0 = new steelseries.Odometer('od0', 
+   {
+   digits: 4,
+   decimals: 1   
+   });
+
+ $(document).ready(function () {  
+   
+$.fn.roundSlider.prototype._invertRange = true;
+
+// this is core functionality to generate the numbers
+$.fn.roundSlider.prototype.defaults.create = function() {
+  var o = this.options, tickInterval = 1;
+  for (var i = o.min; i <= o.max-1; i += tickInterval) {
+    var angle = this._valueToAngle(i);
+    var numberTag = this._addSeperator(angle, "rs-custom");
+    var number = numberTag.children();
+    number.clone().css({
+      "width": o.width + this._border(),
+      "margin-top": this._border(true) / -2
+    }).appendTo(numberTag);
+    number.removeClass().addClass("rs-number").html(i).rsRotate(-angle);
+  }
+}
+
+$("#slider").roundSlider({
+  sliderType: "min-range",
+  startAngle: 90,
+  editableTooltip: false,
+  handleShape: "dot",
+  handleSize: "+6",
+  radius: 120,
+  width: 24,
+  min: 5,
+  max: 25,
+  step: 0.25,
+  value: ~mdbud530~,
+  startAngle: 90,
+   
+  tooltipFormat: function (e) {
+    var parts = parseFloat(e.value).toFixed(2).split(".");
+   // var sec = parts[1] == "00" ? "00" : 60*(parts[1]/100);
+   // var value = parts[0] + ":" + sec;
+   var value = parts[0] + " C°" ;
+   newAJAXCommand('../web.cgi?mdbw530='+parts[0]); 
+	od0.setValue(parts[0]);   
+    return value;
+  }
+ 
+});
+ 
+  
+});
+ 
+
+
+$('#log').on("collapsibleexpand" , '[id^="tab"]', function (e) {			//на открытие collapsible
+ e.preventDefault();   
+});
+
+
+$('#clps').on("collapsibleexpand" , '#count', function (e) {				//на открытие collapsible счетчиков	
+ 
+	if(data_W==null)
+	{
+	data_W=setInterval(function(){update_W();}, 1000);
+	}
+});
+
+$('#clps').on("collapsiblecollapse" , '#count', function (e) {			//на закрытие collapsible    счетчиков 	 
+ 
+	if(data_W!=null)
+	{
+	clearInterval(data_W);
+	data_W=null;	
+	}	
+});
+
+
+$('#clps').on("collapsibleexpand" , '#sens', function (e) {				//на открытие collapsible виджетов t
+
+	if(data_T==null)
+	{
+	data_T=setInterval(function(){update_T();}, 1000);
+	}
+});
+
+$('#clps').on("collapsiblecollapse" , '#sens', function (e) {			//на закрытие collapsible    виджетов t 
+ 
+	if(data_T!=null)
+	{
+	clearInterval(data_T);
+	data_T=null;	
+	}	
+});
+
+//вывод Obj через alert()
+function alertObj(obj) {
+    var str = "";
+    for(k in obj) {
+        str += k+": "+ obj[k]+"\r\n";
+    }
+    alert(str);
+}
+
+
+
+$('#clps').on("collapsibleexpand" , '#mdbdata', function (e) {				//на открытие collapsible
+ 
+	if(data_mdb==null)
+	{
+	data_mdb=setInterval(function(){update_mdb();}, 1000);
+	}
+});
+
+$('#clps').on("collapsiblecollapse" , '#mdbdata', function (e) {			//на закрытие collapsible
+ 	
+	if(data_mdb!=null)
+	{
+	clearInterval(data_mdb);
+	data_mdb=null;	
+	}	
+});
+
+
+
+
+
+
+
+
+
+$( "#sen-popup" ).bind({
+	popupafterclose: function(event, ui) {									//на закрытие popup датчиков	
+//	data_SEN=false;	 
+	if(data_SEN!=null)
+	{
+	clearInterval(data_SEN);
+	data_SEN=null;	
+	}		
+   }
+});	
+
+
+
+ 
+
+
+function updateStatusW(xmlData1)											//обновление счетчика
+{
+int513=(getXMLValue(xmlData1, 'm513'));	
+int512=(getXMLValue(xmlData1, 'm512'));
+updateOdo();
+}
+
+
+function updateStatusT(xmlData) {											//обновление температуры
+
+		for (var i = 0; i < ds_cnt;)
+		{
+		value=(getXMLValue(xmlData, 'm'+parseInt(sen_addr+i)));
+	
+		if(value&0x8000)
+		{
+		value=value&0b0111111111111111;
+		tds[i] =(parseFloat(value/10).toFixed(1))*(-1);
+		}
+		else
+		{
+		tds[i] =(parseFloat(value/10).toFixed(1));
+		}		
+		
+		tsen[i].setValueAnimated(tds[i]);
+		tsen[i].toggleUserLed();	
+		setTimeout(function(){tsen[i].toggleUserLed()}, 100);
+		i++;
+		}
+}
+
+
+
+/************************************ Modbus **********************************************************/
+
+var x0 = [];
+var x1 = [];
+
+
+var regim;
+
+var	disp=new Array("INT","FLOAT","FLOAT INV","HEX");
+var rownames = ["StartFlag","ID","Command","Number","ExtAddr","IntAddr","Timer","Errors","FifoCount"];
+var rowval = [1,-1,-1,-1,-1,-1,0,0,-1];
+var trns=5;
+var trna=5;
+
+
+
+function updateStatus1(xmlData1) {
+    var addr = 500;
+	if(!xmlData1) return;
+	
+	v = document.all.tbls.rows[0];	
+	v.cells[0].innerText=disp[regim];
+	
+	
+	for(i = 0; i < 10; i++){	
+		
+		h = document.all.tbls.rows[0];
+		s = document.all.tbls.rows[i+1];
+		
+		for(x = 1; x < 11; x++) {
+	
+	regim=regim&3;
+	
+// INT		 
+	if(regim==0)	
+	{
+	 
+			val=getXMLValue(xmlData1, 'm'+addr);
+			s.cells[x].innerText=val;			
+			s.cells[x].title=('0x'+eval(val)).toString(10);
+	}
+// float
+	if(regim==1)
+	{	
+
+			x1[x]=(getXMLValue(xmlData1, 'm'+addr));	
+			x0[x]=(getXMLValue(xmlData1, 'm'+addr+1));
+			val=res(x1[x], x0[x]).toFixed(5) ;					
+			
+			if((!(x%2)))			
+			{				
+			s.cells[x-1].style.visibility = "visible";
+			h.cells[x-1].style.visibility = "visible";			
+			s.cells[x-1].innerText=val;		
+			}
+			else{			
+			s.cells[x+1].style.visibility='hidden';
+			h.cells[x+1].style.visibility='hidden';           	
+			}
+    }
+			
+// float Inverse			
+			if(regim==2)
+			{
+			x1[x]=(getXMLValue(xmlData1, 'm'+addr));	
+			x0[x]=(getXMLValue(xmlData1, 'm'+addr+1));
+			val=res(x1[x], x0[x]).toFixed(5) ;				
+		
+			
+			if((x%2))			
+			{				
+			s.cells[x-0].style.visibility = "visible";
+			h.cells[x-0].style.visibility = "visible";			
+			s.cells[x-0].innerText=val;				
+			}
+			else{
+			s.cells[x+0].style.visibility="hidden";
+			h.cells[x+0].style.visibility="hidden";		
+			}
+	}
+// INT HEX
+    if(regim==3)	
+	{
+			 
+			 s.cells[x].style.visibility = "visible";
+			 h.cells[x].style.visibility = "visible";
+	
+	
+			val=getXMLValue(xmlData1, 'm'+addr);	
+			s.cells[x].innerText='0x'+eval(val).toString(16);			
+			s.cells[x].title='0x'+eval(val).toString(16);
+	}	
+			
+			addr++;			
+		}
+	}
+}
+
+
+function CreateTableMdb2() {
+    var addr = 500;
+	for(i = 0; i < 9; i++){     //кол-во строк+1
+		r=document.all.tbls.insertRow();
+		(r.insertCell(0)).innerText=addr;
+		
+		for(x = 1; x < 11; x++)   //кол-во сстолбцов-1
+		(r.insertCell(x)).innerText=' ';
+		r.style.backgroundColor = "#ed9d57";		
+		k = document.all.tbls.rows[0].cells[0];		
+		k.onclick=function(){regim++; if(regim>3)regim=0;};	
+		addr+=10;		
+	}	
+	for(i = 9; i < 10; i++){
+		r=document.all.tbls.insertRow();
+		(r.insertCell(0)).innerText=addr;
+		
+		for(x = 1; x < 11; x++)
+		(r.insertCell(x)).innerText=' ';
+		r.style.backgroundColor = "#0a6821";		
+		addr+=10;		
+	}		
+
+//	newAJAXCommand('/protect/mdb.xml?start=500&stop=600', updateStatus1, data_mdb);
+//	alert(data_mdb);
+}
+ 
+
+CreateTableMdb2();
+
+function update_mdb()
+{
+	newAJAXCommand('/protect/mdb.xml?start=500&stop=600', updateStatus1, false);	//обновление Modbus 
+}
+
+
+ 
+function update_W()  
+{
+	newAJAXCommand('/protect/mdb.xml?start=512&stop=530', updateStatusW, false);	//обновление данных счетчика
+}
+
+function update_T()  
+{
+	newAJAXCommand('/protect/mdb.xml?start=512&stop=530', updateStatusT, false);	//обновление данных 
+}
+
+
+
+});
+
+</script>
+</body>
+</html>

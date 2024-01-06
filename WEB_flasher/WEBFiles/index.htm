@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>PR_SD</title>	 
+<head>
+<script type="text/javascript">
+    function DetectTheThing()
+    {
+       var uagent = navigator.userAgent.toLowerCase();
+       if (uagent.search("iphone") > -1 || uagent.search("ipad") > -1 
+       || uagent.search("android") > -1 || uagent.search("blackberry") > -1
+       || uagent.search("webos") > -1)
+		window.location.href ="indexm.htm";
+		else
+		window.location.href ="indexp.htm";
+    }
+</script>
+</head>
+<body onload="DetectTheThing()">
+</body>
+</html>

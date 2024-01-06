@@ -1,0 +1,127 @@
+<html>
+  
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>SegmentDisplay</title>
+        
+
+    <script type="text/javascript" src="../lib/segment-display1.js"></script>	
+	<script src="../lib/scripts.js"></script>
+	<script src="../lib/site.js"></script>
+<style>
+	body{
+    background-color: #000000; /* Цвет фона веб-страницы */
+   }  
+ </style>
+
+ 
+    <script type="text/javascript">
+
+      var display = new SegmentDisplay("display");
+      display.pattern         = "####.####";
+      display.cornerType      = 2;
+      display.displayType     = 7;
+      display.displayAngle    = 9;
+      display.digitHeight     = 20;
+      display.digitWidth      = 12;
+      display.digitDistance   = 2;
+      display.segmentWidth    = 3;
+      display.segmentDistance = 0.5;
+      display.colorOn         = "rgba(255, 99, 71, 0.9)";
+      display.colorOff        = "rgba(0, 0, 0, 0.05)";
+
+	  var display1 = new SegmentDisplay("display1");
+      display1.pattern         = "####.####";
+      display1.cornerType      = 2;
+      display1.displayType     = 7;
+      display1.displayAngle    = 9;
+      display1.digitHeight     = 20;
+      display1.digitWidth      = 12;
+      display1.digitDistance   = 2;
+      display1.segmentWidth    = 3;
+      display1.segmentDistance = 0.5;
+      display1.colorOn         = "rgba(0, 0, 205, 0.9)";
+      display1.colorOff        = "rgba(0, 0, 0, 0.05)";
+
+	  
+	  var display2 = new SegmentDisplay("display2");
+      display2.pattern         = "#####.#";
+      display2.cornerType      = 2;
+      display2.displayType     = 7;
+      display2.displayAngle    = 9;
+      display2.digitHeight     = 20;
+      display2.digitWidth      = 12;
+      display2.digitDistance   = 2;
+      display2.segmentWidth    = 3;
+      display2.segmentDistance = 0.5;
+      display2.colorOn         = "rgba(0, 255, 255, 0.9)";
+      display2.colorOff        = "rgba(0, 0, 0, 0.05)";
+	  
+     
+var value;
+var value1;	  
+var value2;	
+	
+var x0,x1;
+
+	
+	function update()
+	{
+	newAJAXCommand('mdb.xml?start=538&stop=544', updateStatus, true);
+	}	
+	
+	update();
+	
+	
+	
+function updateStatus(xmlData) {	
+	
+		
+			x1=(getXMLValue(xmlData, 'm541'));	
+			x0=(getXMLValue(xmlData, 'm540'));
+			value=(int32_float(x1, x0).toFixed(1));
+
+						
+			
+			x1=(getXMLValue(xmlData, 'm543'));	
+			x0=(getXMLValue(xmlData, 'm542'));
+			value1=(int32_float(x1, x0).toFixed(1));
+			 
+			 
+			x1=(getXMLValue(xmlData, 'm539'));	
+			x0=(getXMLValue(xmlData, 'm538'));
+			value2=(int32_float(x1, x0).toFixed(1)); 
+
+		
+    
+	display.setValue('t '+value+' *'+'C');
+	display1.setValue('H '+value1+' *'+'o');
+	display2.setValue('P '+value2);
+
+	}
+
+
+	  
+      
+
+    </script>
+    
+  </head>
+  
+  <body>
+    <div style="padding: 10px 100px"> 
+	<canvas id="display1" width="580" height="136"></canvas> 		  
+    </div>
+     
+	 
+	<div style="padding: 10px 100px">
+	<canvas id="display" width="580" height="136"></canvas>
+  	</div>	  
+	
+	 
+    <div style="padding: 10px 100px">
+	<canvas id="display2" width="580" height="136"></canvas>  
+    </div>
+  </body>
+  
+</html>

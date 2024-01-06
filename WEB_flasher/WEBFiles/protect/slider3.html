@@ -1,0 +1,228 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>RoundSlider</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	
+	<script src="../lib/scripts.js"></script>
+	<script src="../lib/site.js"></script>	
+    <script src="../lib/jquery-2.1.4.min.js"></script>
+	<script src="../lib/jquery-ui.min.js"></script>	
+	<link rel="stylesheet" href="../lib/jquery-ui.css">		
+    <link href="../lib/roundslider.min.css" rel="stylesheet"/>
+    <script src="../lib/roundslider.min.js"></script>	
+<!--	<script src="https://cdn.jsdelivr.net/jquery.roundslider/1.3/roundslider.min.js"></script>	
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/jquery.roundslider/1.3/roundslider.min.css"> -->
+	
+</head>
+
+<style>
+<!--
+h1 span {
+	font-size: 0.6em;
+}
+
+
+.rs-control {
+  border: 1px solid #aaa;
+  border-radius: 100%;
+  padding: 4px;
+}
+.rs-range-color {
+  background: #ed0909;
+}
+.rs-path-color {
+  background: #bcbcbc;
+}
+.rs-bar .rs-seperator {
+  border-color: #ffffff;
+  margin-left: 16px;
+}
+.rs-tooltip-text {
+  font-size: 32px;
+  color: #0097bd;
+}
+.rs-handle-dot {
+  padding: 11px;
+}
+.rs-handle-dot:after {
+  background-color: #000000;
+}
+span.rs-number {
+  position: absolute;
+  top: -8px;
+  left: 36px;
+  font-family: Segoe UI;
+  font-size: 10px;
+}
+.rs-bar.rs-start .rs-seperator,
+.rs-bar.rs-end .rs-seperator {
+  display: none;
+}
+-->
+
+#slider {
+  border-radius: 1000px;
+  box-shadow: 0px 0px 10px 0px rgb(123, 123, 123);
+}
+.rs-border {
+  border-width: 0px;
+}
+.rs-handle {
+  box-shadow: 0px 0px 16px 0px rgb(177, 177, 177);
+  margin-left: 16px !important;
+  background-color: rgb(252, 252, 252);
+}
+.rs-tooltip-text {
+  font-size: 34px;
+  color: gray;
+}
+span.rs-seperator.rs-border {
+  height: 8px !important;
+  width: 8px !important;
+  background: #aeaeae;
+  border-radius: 1000px;
+  margin-left: 2px;
+  margin-top: -4px !important;
+}
+
+
+
+#back
+{	
+	margin-left:auto;
+    margin-right:auto;
+	width: 100%;
+	margin-bottom:20px;	
+}	
+.btn-shed {
+    font-size:22px;
+    color:#fff;
+    background-color:#555;
+    cursor:pointer;
+    text-decoration:none;
+    border:0;
+	padding-top:10px;
+    padding-bottom:10px;	
+	margin-right:-3px;    
+}
+
+.btn-left {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.btn-right {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+		
+</style>
+
+
+ <!--<body style="padding: 10px 0 0 20px; font-family: monospace;">-->
+<body>
+
+
+ <!--   <h1>roundSlider v<script>document.write($.fn.roundSlider.prototype.version)</script></h1>-->
+        
+       
+<div class="container">
+    <div class="types">
+        <h3>Задатчик регистра 530</h3>      
+            <div class="control">
+                
+				<div id="slider"></div>
+            </div>
+     
+    </div>
+   <button id="back" onclick="return location.href = '../index.htm'"  class="btn-shed btn-left btn-right" data-ajax="false"> Выход</button>
+ </div>  
+    
+<script type="text/javascript">
+$(document).ready(function () {	
+/*		
+	$.fn.roundSlider.prototype._invertRange = true;
+
+// this is core functionality to generate the numbers
+$.fn.roundSlider.prototype.defaults.create = function() {
+  var o = this.options, tickInterval = 1;
+  for (var i = o.min; i <= o.max-1; i += tickInterval) {
+    var angle = this._valueToAngle(i);
+    var numberTag = this._addSeperator(angle, "rs-custom");
+    var number = numberTag.children();
+    number.clone().css({
+      "width": o.width + this._border(),
+      "margin-top": this._border(true) / -2
+    }).appendTo(numberTag);
+    number.removeClass().addClass("rs-number").html(i).rsRotate(-angle);
+  }
+}
+
+$("#slider").roundSlider({
+  sliderType: "min-range",
+  startAngle: 90,
+  editableTooltip: false,
+  handleShape: "dot",
+  handleSize: "+6",
+  radius: 120,
+  width: 24,
+  min: 5,
+  max: 25,
+  step: 0.25,
+  value: ~mdbud530~,
+  startAngle: 90,
+ 
+  
+  tooltipFormat: function (e) {
+    var parts = parseFloat(e.value).toFixed(2).split(".");
+   // var sec = parts[1] == "00" ? "00" : 60*(parts[1]/100);
+   // var value = parts[0] + ":" + sec;
+   var value = parts[0] + " °С" ;
+   newAJAXCommand('../web.cgi?mdbw530='+parts[0]);   
+    return value;
+  }
+  
+ 
+  
+});
+*/
+	
+$("#slider").roundSlider({
+  radius: 120,
+  width: 14,
+  value: ~mdbud530~,
+  handleSize: 35,
+  startAngle: "315",
+  endAngle: "+270",
+  
+  
+  tooltipFormat: function (e) {
+    var parts = parseFloat(e.value).toFixed(2).split(".");
+   // var sec = parts[1] == "00" ? "00" : 60*(parts[1]/100);
+   // var value = parts[0] + ":" + sec;
+   var value = parts[0] + " °С" ;
+   newAJAXCommand('../web.cgi?mdbw530='+parts[0]);   
+    return value;
+  }
+  
+  
+  
+  
+  
+  
+  
+});	
+	
+	
+	
+ });
+		
+		
+		
+</script>
+
+
+</body>
+</html>

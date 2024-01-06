@@ -1,0 +1,189 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Power</title>
+
+		<style type="text/css">
+
+		</style>
+	</head>
+	<body>
+<script src="../lib/highcharts.js"></script>
+<script src="../lib/highcharts-more.js"></script>
+<script src="../lib/site.js"></script>		
+
+<div id="container" style="width: 600px; height: 300px; margin: 0 auto"></div>
+
+		<script type="text/javascript">
+
+var R514, R515=0;
+var F514, F516=0;
+var z = []; 
+var x0 = [];
+var x1 = [];
+	
+function updateStatus(xmlData) {
+
+    var addr = 0;
+	if(!xmlData) return;	 
+	
+	//R512=getXMLValue(xmlData, 'm512');
+	//R513=getXMLValue(xmlData, 'm513');
+	x1=(getXMLValue(xmlData, 'm515'));	
+	x0=(getXMLValue(xmlData, 'm514'));
+	F514=(int32_float(x1, x0).toFixed(2));
+	
+	x1=(getXMLValue(xmlData, 'm517'));	
+	x0=(getXMLValue(xmlData, 'm516'));
+	F516=(int32_float(x1, x0).toFixed(2));
+	
+}
+
+
+
+Highcharts.chart('container', {
+
+    chart: {
+        type: 'gauge',
+        plotBorderWidth: 1,
+        plotBackgroundColor: {
+            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+            stops: [
+                [0, '#FFF4C6'],
+                [0.3, '#FFFFFF'],
+                [1, '#FFF4C6']
+            ]
+        },
+        plotBackgroundImage: null,
+        height: 200
+    },
+
+    title: {
+         text: 'Power Supply'
+    },
+
+    pane: [{
+        startAngle: -45,
+        endAngle: 45,
+        background: null,
+        center: ['25%', '145%'],
+        size: 300
+    }, {
+        startAngle: -45,
+        endAngle: 45,
+        background: null,
+        center: ['75%', '145%'],
+        size: 300
+    }],
+
+    tooltip: {
+        enabled: false
+    },
+
+    yAxis: [{
+        min: 0,
+        max: 20,
+        minorTickPosition: 'outside',
+        tickPosition: 'outside',
+        labels: {
+            rotation: 'auto',
+            distance: 20
+        },
+        plotBands: [
+		{
+            from: 0,
+            to: 12,
+            color: '#00F000',
+            innerRadius: '100%',
+            outerRadius: '105%'
+        },
+		{
+            from: 12,
+            to: 20,
+            color: '#C02316',
+            innerRadius: '100%',
+            outerRadius: '105%'
+        }],
+        pane: 0,
+        title: {
+            text: 'Voltage<br/><span style="font-size:8px">V</span>',
+            y: -40
+        }
+    }, {
+        min: 0,
+        max: 10,
+        minorTickPosition: 'outside',
+        tickPosition: 'outside',
+        labels: {
+            rotation: 'auto',
+            distance: 10
+        },
+        plotBands: [{
+            from: 5,
+            to: 10,
+            color: '#C02316',
+            innerRadius: '100%',
+            outerRadius: '105%'
+        }],
+        pane: 1,
+        title: {
+           text: 'Current<br/><span style="font-size:8px">A</span>',
+            y: -40
+        }
+    }],
+
+    plotOptions: {
+        gauge: {
+            dataLabels: {
+                enabled: true
+            },
+            dial: {
+                radius: '100%'
+            }
+        }
+    },
+
+
+    series: [{
+        name: 'Voltage',
+        data: [0],
+        yAxis: 0
+    }, {
+        name: 'Current',
+        data: [0],
+        yAxis: 1
+    }]
+
+},
+
+    // Let the music play
+    function (chart) {
+        setInterval(function () {	
+		
+		newAJAXCommand('mdb.xml?start=514&stop=518', updateStatus, false);
+		
+            if (chart.series) { // the chart may be destroyed
+                var left = chart.series[0].points[0],
+                    right = chart.series[1].points[0],					 					
+                    leftVal,
+                    rightVal,
+                    inc = (Math.random() - 0.5) * 3;
+
+ 
+				leftVal = F514*1.0;
+				rightVal = F516*1.0;			
+			
+                left.update(leftVal, true);
+                right.update(rightVal, false);
+			//left.update(R512, false);
+            // right.update(R513, false);
+				
+                chart.redraw();
+            }
+        }, 1000);
+
+    });
+		</script>
+	</body>
+</html>

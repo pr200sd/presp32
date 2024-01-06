@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html><head><title>Scheduler</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<link rel="stylesheet" type="text/css" href="../but/css/style.css" />
+
+
+	<script src="../lib/scripts.js"></script>
+	<script src="../lib/site.js"></script> 
+	<script src="../lib/jquery-2.1.4.min.js"></script>
+	<script src="../lib/jquery-ui.min.js"></script>	
+	<link rel="stylesheet" href="../lib/jquery-ui.css">	
+	<script src="../lib/steelseries-min.js"></script>
+	<script src="../lib/tween-min.js"></script>	
+ 
+</head>	
+
+<style> 
+
+body {
+    font-family:"Ubuntu Light";
+    color:#333
+}
+
+.zone-title {
+    font-size:42px
+}
+
+.zone-setpoint {
+    font-size: 80px;
+	text-align: center;
+	color: blue;
+}
+
+#tec_percent
+{
+
+}
+
+#send {
+    font-size:62px;
+    color:#111199;
+	width: 100%;
+    background-color:green;
+    border-radius: 12px;
+    border:0;
+    padding:1px;
+    cursor:pointer;
+    text-decoration:none;
+}
+
+#send:active{
+    background-color: blue;
+	color:#991111;	
+}
+
+#sheduler, #back
+{	
+	margin-left:auto;
+    margin-right:auto;
+	width: 100%;
+	margin-bottom:20px;	
+}
+
+
+.btn-shed {
+    font-size:22px;
+    color:#fff;
+    background-color:#555;
+    cursor:pointer;
+    text-decoration:none;
+    border:0;
+	padding-top:10px;
+    padding-bottom:10px;	
+	margin-right:-3px;    
+}
+
+.table { 
+    margin: 0px auto; 
+    max-width:500px; 
+    padding:20px; 
+    margin-top:50px;
+    box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.1);
+    text-align:left;
+}
+
+
+.statusView {width: 100% !important;  margin:0px; position: relative !important; height:28px; padding:10px 0 0 0; background-color:#E9E9E9; font-weight:bold; -webkit-border-radius: 0.7em !important; border-radius: 0.7em; display:none; text-align:center; }
+.statusViewAlert {width: 100% !important;  margin:0px; position: relative !important; height:28px; padding:10px 0 0 0; background-color:#F8B584 !important; font-weight:bold; -webkit-border-radius: 0.7em !important; border-radius: 0.7em; display:none; text-align:center; }
+
+.btn-left {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.btn-right {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+#ttt{
+position:relative;
+}
+
+
+label{
+    font-size: 12px;
+    text-align: center;
+	color:red;
+}
+ 
+</style>
+
+
+
+ 
+<body bgcolor=Bisque>
+	<div id="statusView" style=""></div>
+
+	<div class="table">
+	
+	<div class="container">
+	
+
+	<header>
+	<h1><strong>Планировщик</strong></h1>
+	<h2>Недельный, дискретность 15 минут</h2>
+	</header>
+	
+	<canvas align=left id="clock" width="200" height="200"></canvas>		
+						
+	<section class="main">						
+		
+		<div class="switch demo3">
+			<input id="d0" type="checkbox">
+			<label><i>ПН</i></label>
+		</div>
+		
+		<div class="switch demo3">
+			<input id="d1" type="checkbox">
+			<label><i>ВТ</i></label>
+		</div>				
+		
+		<div class="switch demo3">
+			<input id="d2" type="checkbox">
+			<label><i>СР</i></label>
+		</div>
+		
+		<div class="switch demo3">
+			<input id="d3" type="checkbox">
+			<label><i>ЧТ</i></label>
+		</div>
+		
+		<div class="switch demo3">
+			<input id="d4" type="checkbox">
+			<label><i>ПТ</i></label>
+		</div>
+		
+		<div class="switch demo3">
+			<input id="d5" type="checkbox">
+			<label><i>СБ</i></label>
+		</div>
+		
+		<div class="switch demo3">
+			<input id="d6" type="checkbox">
+			<label><i>ВС</i></label>
+		</div>
+		
+		
+	</section>
+			
+    </div>
+	
+
+	 
+
+	<div class="izm">	 
+	<div id="tec_percent" class="zone-setpoint" ></div>	 
+	</div>
+	<div id="dialog"></div>
+	<div id="alert"></div>	
+	
+ <!--	<button id="sheduler" class="btn-shed btn-left btn-right">Включить планировщик</button>	
+   <button id="back" onclick="return location.href = '../index.htm'"  class="btn-shed btn-left btn-right" data-ajax="false"> Выход</button>	-->
+	
+	
+	<table id=e border="2" width="100%">
+	
+<!--	<tr bgcolor=Silver><td>Внешний IP:</td><td></font></td></tr>
+	<tr bgcolor=Silver><td>Текущее время контроллера:</td><td></td></tr>
+	<tr bgcolor=Silver><td>Состояние:</td><td></font></td></tr>-->
+	
+	<tr bgcolor=Silver><td><button id="sheduler" class="btn-shed btn-left btn-right">Включить планировщик</button></td><td><button id="back" onclick="return location.href = '../index.htm'"  class="btn-shed btn-left btn-right" data-ajax="false"> Выход</button></font></td></tr>
+	<tr bgcolor=Silver><td> </td><td></td></tr>
+	<tr bgcolor=Silver><td> </td><td></font></td></tr>
+	
+	
+	<tr><td colspan="2"><button id="send" style="float:bottom">Записать</button></td></tr> 
+<!--	<tr><td colspan="2"><button id="back" onclick="return location.href = '../index.htm'"  class="btn-shed btn-left btn-right" data-ajax="false"> Выход</button></td></tr>-->
+	<tr><td colspan="2"></td></tr>
+	
+	
+	
+	</div>
+<!--	<button id="back" class="btn-shed btn-left btn-right">ВЫХОД</button>	
+	<a href='../index.htm' class="btn-shed btn-left btn-right" data-ajax="false"><input type='submit' value='Выход' class="button"></a>-->
+<style>
+	
+</style>	
+	
+
+
+
+<script>
+
+//$(function () {
+
+
+var col="";
+var cc=0;
+var e,i,j;
+var b=new Array();
+var upd=0;
+
+var i=0;
+var statusMsg = false;
+var cnt1=0
+var tec_persent=0;
+
+var hours=0;
+var minutes=0;
+var seconds=0;
+var unixtime=0;
+var status=0;
+var prev=0;
+
+
+var visibleFlag = 1;
+var doingsave=false;
+var connected = false;
+
+var flag=false;
+
+
+var state = { 
+	
+	shed_en: 0
+
+};
+
+
+
+	clock = new steelseries.Clock('clock', {
+                        width: 200,
+                        height: 200,
+						isAutomatic: false,
+						//secondPointerVisible: true,
+						secondMovesContinuous: true,			
+                        });
+
+
+
+function sc(){cc=0}
+
+//выделение ячейки цветом по нажатию
+function cbg(e){
+cc=1;
+col=e.style.backgroundColor ? "" : "#FF0000";
+e.style.backgroundColor=col;
+qwick();
+}
+
+ //выделение ячейки цветом по данным с устройства
+ function it(a){
+ 
+	for(i=0;i<6;i++)
+	{
+		for(j=0;j<16;j++)
+		{
+		e=document.getElementById("t"+(i*16+j));
+		if (a[i]&(1<<j)) e.style.backgroundColor="#FF0000";
+		}
+	}
+	
+	qwick();
+	
+};
+
+function mc(e){
+if (cc) e.style.backgroundColor=col;
+}
+
+
+
+//Построение таблицы планировщика
+function table(){
+		html='';
+		html+='<table id=d onmouseup=sc()>';
+		html+='<tr><td>';
+		html+='<table border=2 id=ttt  bgcolor=LightGray><tr><td>Время</td><td align="center">ON/OFF</td></tr>';
+		var i,t,m;
+		for(i=0;i<48;i++)
+		{
+		t="";
+		if (i%4==0) t=i/4+":00";		
+		if (i%4!=0) t=Math.floor(i/4)+":"+i%4*15;		
+		html+="<tr><td>"+t+"</td><td height=40px width=180px id=t"+i+" onmousedown=cbg(this) onmouseover=mc(this)>&nbsp;</td></tr>";
+		}
+		html+='</table></td><td>';
+		html+='<table border=2  bgcolor=LightGray><tr><td>Время</td><td align="center">ON/OFF</td></tr>';
+		for(i=48;i<96;i++){
+		t="";
+		if (i%4==0) t=i/4+":00";
+		if (i%4!=0) t=Math.floor(i/4)+":"+i%4*15;
+		html+="<tr><td>"+t+"</td><td height=40px width=180px id=t"+i+" onmousedown=cbg(this) onmouseover=mc(this)>&nbsp;</td></tr>";
+		}
+		html+='</table></td></tr></table>';
+		return html;
+}
+
+/*
+$("#send").bind('click', function(){
+  alert('Имитация send')
+});
+*/
+
+$("#sheduler").click(function () {
+
+if(state.shed_en==0)
+{	
+	
+	$("#alert").dialog("open");
+	stralert= "Необходимо проверить и настроить расписание!";		
+	$("#alert").html(stralert);		
+}
+
+if(state.shed_en==1)
+{			
+	$("#alert").dialog("open");
+	stralert= "Расписание планировщика будет сброшено! Выход включен постоянно.";		
+	$("#alert").html(stralert);	
+}
+    
+});
+
+
+
+
+
+
+
+var buttonsConfig = [
+    {
+        text: "Установить",        
+        click: function() {				
+		save_time();		
+        }
+    },
+    {
+        text: "Отмена",        
+        click: function() {
+		$("#dialog").dialog("close");		
+        }
+    }
+];
+
+var buttonsAlert = [
+    {
+        text: "Принять",        
+        click: function() {
+			if(state.shed_en==0)
+			{
+			on_sheduler();
+			return false;
+			}
+			if(state.shed_en==1)
+			{
+			off_sheduler();
+			return false;			
+			}			
+        }
+    },
+    {
+        text: "Отмена",        
+        click: function() {
+		$("#alert").dialog("close");		
+        }
+    }
+];
+
+
+//диалоговое окно настройки часов
+	$("#dialog").dialog({									
+		title: "Настройка часов",  	//тайтл, заголовок окна		 
+		width: "95%",				//ширина
+		height: 200,				//высота				
+		autoOpen: false,
+		modal: false,           	//true -  окно модальное, false - нет
+		show: 'slide',
+		buttons: buttonsConfig					
+		});
+	
+
+//диалоговое окно вкл/откл планировщика
+	$("#alert").dialog({									
+		title: "Планировщик",  		//тайтл, заголовок окна
+		width: "95%",				//ширина		
+		height: 200,				//высота				
+		autoOpen: false,
+		modal: false,           	//true -  окно модальное, false - нет
+		show: 'slide',
+		buttons: buttonsAlert					
+		});	
+	
+
+function set_time(){	
+	var now=new Date(); 
+	hours=now.getHours();
+	minutes=now.getMinutes();
+	seconds=now.getSeconds();
+	
+	var time = Date.now || function() {
+	return +new Date;
+	};	
+	
+	unixtime=Math.floor(time()/1000+(-1*new Date().getTimezoneOffset()/60)*3600)
+	
+	if (minutes<=9) {
+	minutes="0"+minutes;
+	}
+
+	if (seconds<=9) {
+	seconds="0"+seconds;
+	}	
+	
+	strclock= "Время компьютера: "+ hours+":"+minutes+":"+seconds;		
+	$("#dialog").html(strclock);		
+}
+
+
+function save_time(){		
+	set_time();	
+//	alert('../web.cgi?mdbw590='+seconds+'&mdbw591='+minutes+'&mdbw592='+hours);	
+	newAJAXCommand('../web.cgi?mdbw570='+seconds+'&mdbw571='+minutes+'&mdbw572='+hours); 				//запись часов во внутренние регистры
+	newAJAXCommand('../web.cgi?mdbw680=1&mdbw681=16&mdbw682=16&mdbw683=3&mdbw684=1024&mdbw685=570'); 	//однокрантная запись часов из 570, 571, 572
+	$("#dialog").dialog("close");
+	}	
+
+function on_sheduler(){
+	$("#d").show();
+	$("#send").show();	
+	if($("#sheduler").text="Включить планировщик")
+	state.shed_en=1;	 
+	var res=(status)|0b1000000000000000;
+//alert(res);
+newAJAXCommand('../web.cgi?mdbw518='+res);	
+		
+	$("#sheduler").css("background-color", "#ff9600");
+	$("#sheduler").text("Отключить планировщик");
+	$("#alert").dialog("close");
+}	
+
+function off_sheduler(){	
+	
+	it(new Array(65535,65535,65535,65535,65535,65535));
+/*******************************************************/	
+	for(i=0;i<6;i++)
+	{
+	b[i]=0;
+		for(j=0;j<16;j++){
+		e=document.getElementById("t"+(i*16+j));
+			if (e.style.backgroundColor)
+			{
+			b[i]|=1<<j;
+			}
+		}
+		
+	check1(b[i]);	
+	}
+	
+	$( "#send" ).html(((cnt1/96)*100).toFixed(1) +"%");
+	$( "#tec_percent" ).html(((cnt1/96)*100).toFixed(1) +"%");
+	cnt1=0;
+    save(b[0],b[1],b[2],b[3],b[4],b[5]);
+/******************************************************/	
+	$("#d").show();
+	$("#send").show();	
+	if($("#sheduler").text="Отключить планировщик")
+	state.shed_en=0;		
+	$("#sheduler").css("background-color", "#0096ff");
+	$("#sheduler").text("Включить планировщик");
+var res=(status)&0b0111111111111111;
+//alert(res);
+newAJAXCommand('../web.cgi?mdbw518='+res);	
+	$("#alert").dialog("close");	
+}	
+
+	
+//установка часов
+$("#clock").click(function () {
+	$("#dialog").dialog("open");	
+	set_time();	
+});
+
+/*
+ //Перейти на страницу графика по клику на термометре
+$("#T1, #T2").click(function () {
+	window.location.href = "esp.html";
+});
+*/
+
+//Скрыть таблицу планировщика по клику на шапке
+$("#e tr:lt(3)").click(function () {
+//$("#send").click(function () {
+/*
+	if(flag==true)
+	{
+	$("#d").hide();
+	$("#send").hide();	
+	}
+	else
+	{
+	$("#d").show();
+	$("#send").show();	
+	}
+	flag=!flag;*/
+	});
+
+//$('.table').addClass('.table').on('click', function(){
+$("#tec_percent").on('click', function(){
+       
+	if(flag==true)
+	{
+	$("#d").hide();
+	$("#send").hide();
+	$("#e").hide();
+	}
+	else
+	{
+	$("#e").show();
+	$("#d").show();
+	$("#send").show();	
+	}
+	flag=!flag;
+	   
+ //     alert("ok");
+    });	
+	
+	
+	
+	
+//Определение коэфф,
+function qwick() {
+
+for(i=0;i<6;i++)
+	{
+	b[i]=0;
+		for(j=0;j<16;j++){
+		e=document.getElementById("t"+(i*16+j));
+			if (e.style.backgroundColor)
+			{
+			b[i]|=1<<j;
+			}
+		}
+		
+	check1(b[i]);	
+	}	
+	$( "#send" ).html(((cnt1/96)*100).toFixed(1) +"%");
+	tec_persent=((cnt1/96)*100).toFixed(1);
+	
+	cnt1=0;
+}
+	
+	
+
+//Обработчик кнопки записи в устройство
+$("#send").click(function () {
+
+	for(i=0;i<6;i++)
+	{
+	b[i]=0;
+		for(j=0;j<16;j++){
+		e=document.getElementById("t"+(i*16+j));
+			if (e.style.backgroundColor)
+			{
+			b[i]|=1<<j;
+			}
+		}
+		
+	check1(b[i]);	
+	}
+	
+	$( "#send" ).html(((cnt1/96)*100).toFixed(1) +"%");
+	$( "#tec_percent" ).html(((cnt1/96)*100).toFixed(1) +"%");
+	cnt1=0;
+    save(b[0],b[1],b[2],b[3],b[4],b[5]);
+	
+	$("#d").hide();
+	$("#send").hide();	
+	$("#e").hide()
+});
+
+
+
+//Подсчет едениц в двоичном числе
+function check1(t) {    
+	for(j=0;j<16;j++)
+	{	
+	n=t&(1<<j);		
+		if(n>0)
+		{
+		cnt1++;		
+		}			
+	}	
+	return cnt1;
+}
+
+
+
+
+//Проверка фокуса на странице
+function checkVisibility() {
+    $(window).bind("focus", function(event) {
+        visibleFlag = 1;
+    });
+
+    $(window).bind("blur", function(event) {
+        visibleFlag = 0;
+    });
+}
+
+
+
+//Вывод сообщений в статусбар
+function setStatus(msg,dur,pri){
+		if(statusMsg == true){return};
+		statusMsg= true;
+		if(pri>0){
+			$("#statusView").toggleClass("statusViewAlert",true);
+			$("#statusView").toggleClass("statusView",false);
+		} else {
+			$("#statusView").toggleClass("statusView",true);
+			$("#statusView").toggleClass("statusViewAlert",false);
+		}
+		$("#statusView").show();
+		$("#statusView").html(msg);
+		dur = dur*1000;
+		if(dur >0){
+			setTimeout(function(){$("#statusView").hide(200);$("#statusView").html(""); statusMsg= false},dur)
+		}
+	}
+
+	
+function clockmonitor() {
+	
+
+	
+	var time = Date.now || function() {
+	return +new Date;
+	};
+	
+	var unixtime=Math.floor(time()/1000+ (-1*new Date().getTimezoneOffset()/60)*3600)
+	i++;
+	
+	
+	if(i & 1)
+	{	
+	clock.setBackgroundColor(steelseries.BackgroundColor.BLACK);	
+	clock.setFrameDesign(steelseries.FrameDesign.METAL);
+	}
+	else
+	{	
+	clock.setBackgroundColor(steelseries.BackgroundColor.RED);
+	clock.setFrameDesign(steelseries.FrameDesign.TILTED_BLACK);
+	}
+	
+	
+		if(Math.abs(~sntp_time~-unixtime)<1800)  //!!!
+		{		
+		clock.setAutomatic(1);
+		clock.setBackgroundColor(steelseries.BackgroundColor.BLACK);	
+		clearInterval(tm);
+		}	
+}		
+	
+	
+	
+
+//Обновление web страницы
+function update() {
+
+	var time = Date.now || function() {
+	return +new Date;
+	};
+	
+	var unixtime=Math.floor(time()/1000+(-1*new Date().getTimezoneOffset()/60)*3600)
+
+	if(state.rele==1)
+	{	
+//	$("td:eq(5)").html("РАБОТАЕТ").css('color', '#FF0000');
+	}
+	if(state.rele==0)
+	{	
+//	$("td:eq(5)").html("ВЫКЛЮЧЕН").css('color', '#0000FF');
+	}
+	
+	if(state.shed_en==0)
+	{
+	$("#sheduler").css("background-color", "#0096ff");
+	$("#sheduler").text("Включить планировщик");
+	}
+	if(state.shed_en==1)
+	{
+	$("#sheduler").css("background-color", "#ff9600");
+	$("#sheduler").text("Отключить планировщик");
+	}	
+ 
+	if(upd<20)
+	{
+	it(new Array(~mdbud512~,~mdbud513~,~mdbud514~,~mdbud515~,~mdbud516~,~mdbud517~));	
+	$( "#tec_percent" ).html(tec_persent +"%");	 	
+	}
+
+}
+
+
+
+//Сохранение переменных планировщика
+function save(s0,s1,s2,s3,s4,s5) {
+	doingsave=true;
+    $.ajax({
+        type: 'GET',
+		url: url = "../web.cgi?mdbw512="+s0+"&mdbw513="+s1+"&mdbw514="+s2+"&mdbw515="+s3+"&mdbw516="+s4+"&mdbw517="+s5,		
+        async: true,
+		timeout: 3000,
+		tryCount : 0,
+		retryLimit : 3,
+		success: function (data) {
+			statusMsg = false;
+			if(!connected) setStatus("Connected",2,0);
+			connected=true;
+			doingsave=false;
+		},
+		error : function(xhr, textStatus, errorThrown ) {
+        if (textStatus == 'timeout') {
+            this.tryCount++;
+            if (this.tryCount <= this.retryLimit) {
+                //try again
+                $.ajax(this);
+                return;
+            }
+            return;
+        }
+		if(connected) setStatus("No connection to server!",0,1);
+		connected=false;
+		doingsave=false;
+    }
+    });
+}
+
+
+
+
+
+ 
+
+//вывод Obj через alert()
+function alertObj(obj) {
+    var str = "";
+    for(k in obj) {
+        str += k+": "+ obj[k]+"\r\n";
+    }
+    alert(str);
+}
+
+
+function updateStatus(xmlData) {
+    var addr = 0;
+	if(!xmlData) return;
+	status=getXMLValue(xmlData, 'm518');
+	state.shed_en=((status)&0b1000000000000000)>>15;
+//	alert(state.shed_en);
+	
+	
+	if(state.shed_en==0)
+	{
+	$("#sheduler").css("background-color", "#0096ff");
+	$("#sheduler").text("Включить планировщик");
+	}
+	if(state.shed_en==1)
+	{
+	$("#sheduler").css("background-color", "#ff9600");
+	$("#sheduler").text("Отключить планировщик");
+	}	
+/*	
+	upd	++;	
+	if(!(upd%20))
+	{
+	//update();
+	//alert(upd);
+	}
+*/	
+}
+
+
+//загруprf страницы
+$(document).ready(function() {
+
+	tm=setInterval(clockmonitor, 1000);
+	flag=false;
+	upd=0;		
+	
+    newAJAXCommand('mdb.xml?start=512&stop=519', updateStatus, true); 
+	$("#e td:eq(7)").append(table());
+update();
+    checkVisibility();
+	$("#e").hide();
+	$("#d").hide();
+	$("#send").hide();
+	//alertObj(state);  /DEBUG
+	
+	
+	
+	for(i=0;i<8;i++)
+	{ 	
+	
+		if(((~mdbuw518~)&(Math.pow(2, i)))>>i)
+		{		
+		$('#d'+i).prop('checked', true);		
+		}
+		else
+		{
+		$('#d'+i).prop('checked', false);		
+		}
+		
+	}	
+	
+	
+	
+	
+	
+
+$('[id ^= d]').change(function(e) { 	 
+	prev=status;
+	var val=0;  
+	var ch= Number($(this).attr("id").replace(/\D+/g,""));
+		if ($(this).prop('checked'))
+		{ 
+//		alert(1<<ch);
+		val= Number(prev|(1<<ch));	
+		newAJAXCommand('../web.cgi?mdbw518='+val);   
+		}
+		else
+		{ 
+//		alert(1<<ch);
+		val=Number(prev-(1<<ch));
+		newAJAXCommand('../web.cgi?mdbw518='+val);	
+		} 
+ });
+ 
+ 
+});	
+	
+
+
+</script>
+
+
+</div>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+        <title>Управление выходами</title>
+
+        <link rel="stylesheet" type="text/css" href="css/style.css" />
+        <link rel="stylesheet" type="text/css" href="css/font-awesome.css" />
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:700,300' rel='stylesheet' type='text/css' />
+		
+		<script src="../lib/site.js"></script>	
+		<script src="../lib/jquery-2.1.4.min.js"></script>			
+    </head>
+		
+	
+    <body onload="init()">
+        <div class="container">					
+			
+			<header>
+			
+				<h1><strong>Управление битами регистров Modbus</strong> R512, R513</h1>
+				<h2>WEB интерфейс управления при помощи кнопок, каждая кнопка управляет битом [0/1] в регистре</h2>
+				
+				<nav class="codrops-demos">
+					<a class="current-demo" href="index.html">Demo 1</a>
+					<a href="index2.html">Demo 2</a>
+					<a href="index3.html">Demo 3</a>
+					<a href="index4.html">Demo 4</a>
+				</nav>
+
+			</header>
+					
+				<div class="output">	</div>	
+			 
+        </div>
+    </body>
+	
+<script type="text/javascript">	
+	
+//кол-во кнопок	
+	var but=16;
+	
+	
+	//Рисование чекбокса
+	function Drow_checkbox(n,id){
+	var out='';
+		out+='<div class="switch demo1">';
+		out+='<input type="checkbox"  id="'+id+n+'" value="'+Math.pow(2, n)+'"/>';
+		out+='<label>output"'+n+'"</label>';
+		out+='</div>';
+		return out;	
+	}
+	
+	
+	//Рисование массива кнопок
+	function arch_page(but){
+	html='';	 
+	for (n=0;n<but;n++){	 
+	html+=Drow_checkbox(n, 'i');		
+	<!--html+='<br>';-->
+	}	 	
+	return html;
+}	
+
+ 
+	
+	function init() {
+   
+   $('.output').append(arch_page(but));
+   
+   
+		newAJAXCommand('/but/mdb.xml?start=512&stop=514', updateStatus, true);
+		
+		for(i=0;i<but;i++)
+		{ 	
+		
+			if(((~mdbuw512~)&(Math.pow(2, i)))>>i)
+			{		
+			$('#i'+i).prop('checked', true);		
+			}
+			else
+			{
+			$('#i'+i).prop('checked', false);		
+			}
+			
+		}		
+	}
+
+	function updateStatus(xmlData) {
+
+    var addr = 0;
+	if(!xmlData) return;	 
+	
+	R512=getXMLValue(xmlData, 'm512');
+	R513=getXMLValue(xmlData, 'm513');
+	
+	
+	for(i=0;i<but;i++)
+	{ 		 
+		if(((R512)&(Math.pow(2, i)))>>i)
+		{		
+		$('#i'+i ).prop('checked', true);//			
+		}
+		else
+		{ 
+		$('#i'+i ).prop('checked', false); 
+		}		
+	}	 
+}
+
+	
+	jQuery(function($) {
+  
+		 
+	$( ".output" ).bind( "click", function() { 
+	
+	out1=0;
+	out2=0;
+	
+	for(i=0;i<but;i++)
+	{ 	elem=document.getElementById("i"+i);	
+	 
+		if(elem.checked)		
+		out1=out1+parseInt(elem.value);			
+	}
+	
+	newAJAXCommand('/web.cgi?mdbw512='+out1+'&mdbw513='+out2);	
+ 
+	})
+	
+
+});	
+	
+	
+
+</script>
+	
+</html>

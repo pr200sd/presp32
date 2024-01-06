@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>График]</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache"> 
+ 
+<script src="../lib/dygraph.js"></script>   
+</head>
+<body>
+
+<style type="text/css">	
+	
+	html
+	{
+	width: 100%;
+	height: 100%;
+	}
+	
+ 	body
+	{
+	width: 99%;
+	height: 98%;		
+	}
+		
+		
+	#g1
+	{
+	float:left;
+	width: 99%;
+	height: 98%;
+	display: none;	
+	}
+		
+		
+	#labels2
+	{	
+	display: inline-block;
+	vertical-align: top;
+	white-space: nowrap; /* Переносов в тексте нет */
+	
+	
+	
+	 position: absolute;
+    font-size: 16px;
+    width: 60px;
+    text-align: center;
+    top: 2%;
+    left: 5%;
+	z-index:2;	
+	}	
+		
+
+	#color, #centered
+	{
+	margin-bottom: 2em;
+    }
+
+	  
+	#color, .bar
+	{
+	background: #38f;
+	border-radius: 4px;
+	box-shadow: 0 0 10px #59d;
+	height: 6px;
+	margin: 0 auto;
+	}
+
+	
+	#file, #make 
+	{	
+	left: 50%; /* Положение слоя от левого края */
+	top: 50%; /* Положение слоя от верхнего края */	
+	}
+	
+	#check
+	{
+	width: 100%;
+	background-color: #ddd;
+	display: none;
+	}
+
+	
+	
+	#back, #visibility, #0,#1,#2,#3,#4,#5,#6,#7,#8,#9
+	{ 
+	display: none;
+	}	
+
+	button#back
+	{
+	display: inline; /* Отображать как строчный элемент */
+    margin-right: 5px; /* Отступ слева */
+	}
+	
+	
+	
+	#myProgress
+	{
+	width: 100%;
+	background-color: #ddd;
+	}
+
+	#myBar
+	{
+	width: 0%;
+	height: 30px;
+	background-color: #4CAF50;
+	text-align: center;
+	line-height: 30px;
+	color: white;
+	display: none;
+	}
+
+	.centered
+	{
+    position: fixed; /* or absolute */
+    top: 50%;
+    left: 50%;
+    width: auto;
+    height:auto;
+    margin: -50px 0 0 -100px;
+    background: #f0B00f;
+	}
+		
+</style>
+
+
+<div id="myProgress">
+  <div id="myBar">0%</div>
+</div>
+
+<span id="labels2"> </span> 
+
+<div id="g1" style="background-color:#d8fafa"></div>
+
+<div id="visibility" style="background-color:white"> </div>
+
+
+<div id="check" style="background-color:#d8fafa">  
+      <input type=checkbox id="0" checked onClick="change(this)">
+      <label id="R0" for="0">R0</label>
+      <input type=checkbox id="1" checked onClick="change(this)">
+      <label id="R1" for="1">R1</label>
+      <input type=checkbox id="2" checked onClick="change(this)">
+      <label id="R2" for="2">R2</label>  
+	  <input type=checkbox id="3" checked onClick="change(this)">
+      <label id="R3" for="3">R3</label>
+      <input type=checkbox id="4" checked onClick="change(this)">
+      <label id="R4" for="4">R4</label>
+      <input type=checkbox id="5" checked onClick="change(this)">
+      <label id="R5" for="5">R5</label>
+	  <input type=checkbox id="6" checked onClick="change(this)">
+      <label id="R6" for="6">R6</label>
+	  <input type=checkbox id="7" checked onClick="change(this)">
+      <label id="R7" for="7">R7</label>
+      <input type=checkbox id="8" checked onClick="change(this)">
+      <label id="R8" for="8">R8</label>
+	  <input type=checkbox id="9" checked onClick="change(this)">
+      <label id="R9" for="9">R9</label>	  
+	  <input type="button" value="Reset ZOOM" onclick="unzoomGraph()">  <input type="button" id="back" value="Back" onclick="location.href='../index.htm'">
+</div>	
+
+
+<div id="upload" class="centered">
+<input type="button" id="back" value="Back" onclick="location.href='../index.htm'">
+<input type="file" id="file" >
+<button  id="make" onclick="readFile(document.getElementById('file'))">Make graph</button>
+</div>	
+ 
+	
+<script type="text/javascript">    
+		
+	var numSeries;
+	var labels = [];  
+	var step = 0.1;
+	var delay = 200;
+  
+
+	// управление баром
+	function move(v)
+	{
+	var elem = document.getElementById("myBar");   
+	var width = v;
+ 
+		if(width >= 101)
+		{
+		width = 101   
+		} 
+		else
+		{
+		width=v; 
+		elem.style.width = width + '%'; 
+		elem.innerHTML = width * 1  + '%';
+		}
+
+	}
+  
+  
+ 
+  
+	function hideMe()
+	{
+		var elem = document.getElementById("myBar");
+		if(elem.style.opacity>0)
+		{
+        elem.style.opacity-= step;
+        setTimeout(hideMe, delay);
+		}
+	
+		if(elem.style.opacity==0)
+		{
+		document.body.appendChild(document.createElement('style')).innerHTML = '#myProgress{display:none !important}'; 
+		document.body.appendChild(document.createElement('style')).innerHTML = '#myBar{display:none !important}';	
+		document.body.appendChild(document.createElement('style')).innerHTML = '#labels2{display:block !important}';
+		}
+	}
+
+
+
+  
+	function readFile(object)
+	{
+
+	var reader = new FileReader() 
+	var file = object.files[0]
+	var file_size = object.files[0].size  
+	var total = file.length; loaded = 0;  
+  
+  
+  
+	if (object)
+	{	
+
+    }  
+  
+  
+  
+			reader.onloadstart = function(event) 
+			{
+				document.body.appendChild(document.createElement('style')).innerHTML = '#myProgress{display:block !important}'; 
+				document.body.appendChild(document.createElement('style')).innerHTML = '#myBar{display:block !important}'; 			
+				document.getElementById('myBar').style.opacity=1;				
+				tim=setTimeout(reader.onprogress(object), 100);
+
+			};
+
+
+
+	reader.onerror = function()
+	{
+	alert("Ошибка чтения файла");
+	}
+
+
+
+
+	reader.onprogress = function(object)
+	{
+		if (object.lengthComputable) 
+		{                                            
+                var progress = parseInt(((object.loaded / object.total) * 100), 10 );					
+				//console.log(object.loaded+  " / " + object.total);					
+				move(progress);			
+             
+		}
+	 
+	};
+
+
+
+ function onAllFilesLoaded(){
+   alert("Upload")
+} 
+  
+  
+  
+  
+	reader.onloadend = function()
+	{ 
+	loaded++;
+            if (loaded == total){
+                onAllFilesLoaded();				
+				clearTimeout(tim);
+            }
+			
+    document.body.appendChild(document.createElement('style')).innerHTML = '#g1{display:block !important}';   
+	document.getElementById("upload").classList.remove("centered");
+  
+	
+	var data = reader.result;	
+	
+	var c= data.split("\n")[2];  //читаем 3 сторку в файле, если первая неполная или отсутсвует
+	
+	var r= c.match(/[,]/g).length;	
+
+	
+	g = new Dygraph( document.getElementById("g1"), data,	
+	{
+		labelsDiv: "labels2",
+		labelsSeparateLines: false,		
+		rollPeriod: 1,    
+		animatedZooms: true,	
+		title: '      ',
+		xlabel: 'Time',
+		ylabel: 'Value',	
+		labelsDivStyles: { 'textAlign': 'centre' },		
+		drawAxesAtZero: true,
+		
+		rangeSelectorHeight: 60,
+		
+		
+		
+		
+/*		
+		ticker: Dygraph.dateTicker,
+		 
+		axes:	{
+					x : {
+						valueFormatter: Dygraph.dateString_,
+						//ticker: Dygraph.dateTicker
+						ticker: Dygraph.dateString_
+						}
+				},
+*/		
+		
+/*	
+		xValueFormatter: Dygraph.dateString_,
+		xValueParser: function (x) {
+          return 1 * parseInt(x, 10);
+		},
+*/	
+		
+		strokeWidth: 1,
+		visibility: [true, true, true, true, true, true, true, true, true, true],	
+	
+		underlayCallback: function(canvas, area, g)
+		{
+		
+		var coords = g.toDomCoords(0, 0);
+		var splitX = coords[0];
+		var splitY = coords[1];   				  
+		var topHeight = splitY - area.y;
+		var bottomHeight = area.h - topHeight;					
+		//canvas.fillStyle = 'lightcoral';
+		canvas.fillStyle = '#fad8d8';
+		canvas.fillRect(area.x, area.y, area.w, topHeight);					
+		canvas.fillStyle = 'cornflowerblue';
+		canvas.fillRect(area.x, splitY, area.w, bottomHeight);
+		}
+		
+		
+		
+		
+    });
+	
+	g.ready(function()
+	{ 
+	var labels = [ "x" ];
+        for (var j = 0; j < r+0; j++) {
+          labels.push("R" + j);
+		document.getElementById(j).style.opacity=1; 
+		document.getElementById('R'+(j)).style.opacity=1;
+		document.getElementById(j).checked = true;    
+        }
+		
+		
+		for (var j = 10; j > r; j--) { 	
+		document.getElementById((j-1)).remove();  
+		document.getElementById('R'+(j-1)).remove(); 
+        }
+		
+		
+		
+	g.updateOptions( {'labels': labels} );
+
+	document.body.appendChild(document.createElement('style')).innerHTML = '#check{display:block !important}'; 
+	document.body.appendChild(document.createElement('style')).innerHTML = '#visibility{display:block !important}';
+	document.body.appendChild(document.createElement('style')).innerHTML = '#make{display:none}';
+	document.body.appendChild(document.createElement('style')).innerHTML = '#upload{display:none}';	
+	});	
+	
+	
+	delete reader.result;	
+	move(100);	
+	hideMe(); 	 
+	 
+	}
+  reader.readAsText(file)
+}	
+  
+  
+ 
+ 
+	function change(el)
+	{
+    g.setVisibility(parseInt(el.id), el.checked);    
+    }  
+  
+  
+	function unzoomGraph()
+	{
+		g.updateOptions(
+		{
+		dateWindow: null,
+		valueRange: null
+		});
+	} 
+  
+  
+  function legendFormatter(data) {
+  if (data.x == null) {
+    // This happens when there's no selection and {legend: 'always'} is set.
+    return '' + data.series.map(function(series) { return series.dashHTML + ' ' + series.labelHTML }).join(' ');
+  }
+
+  var html = this.getLabels()[0] + ': ' + data.xHTML;
+  data.series.forEach(function(series) {
+    if (!series.isVisible) return;
+    var labeledData = series.labelHTML + ': ' + series.yHTML;
+    if (series.isHighlighted) {
+      labeledData = '<b>' + labeledData + '</b>';
+    }
+    html += '' + series.dashHTML + ' ' + labeledData;
+  });
+  return html;
+}  
+  
+</script>
+</body>
+</html>

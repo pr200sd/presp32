@@ -1,0 +1,233 @@
+<html>  
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Температура</title>    
+    <link rel="stylesheet" href="../style.css">	
+	<script src="../lib/jquery-2.1.4.min.js"></script>
+	<script src="../lib/jquery-ui.min.js"></script>	
+	<link href="../lib/jquery-ui.css" rel="stylesheet"/>
+    <script src="../lib/segment-display1.js"></script>	
+	<script src="../lib/scripts.js"></script>
+	<script src="../lib/site.js"></script>	
+	<script src="../lib/steelseries-min.js"></script>	
+	<script src="../lib/tween-min.js"></script>
+ <!--<body onload="init();" style="background-color:#000000">-->
+ <body>
+ 
+	<table><tbody>        
+		<tr>		
+		<td width="25%">
+         <canvas  id="idt0" width="200" height="200"></canvas> 		    
+        </td>
+        <td width="25%">    		    
+		 <canvas  id="idt1" width="200" height="200"></canvas> 		   	
+        </td>
+		<td width="25%"> 	 
+		 <canvas  id="idt2" width="200" height="200"></canvas>	  			 
+        </td>
+		<td width="25%"> 	 
+		 <canvas  id="idt3" width="200" height="200"></canvas>	  			 
+        </td>		
+        </tr>
+        <tr>
+        <td width="25%">
+         <canvas  id="idt4" width="200" height="200"></canvas>  		    
+        </td>
+        <td width="25%"> 		    
+		 <canvas  id="idt5" width="200" height="200"></canvas> 		   	
+        </td>
+		<td width="25%">		 
+		 <canvas  id="idt6" width="200" height="200"></canvas>	  			 
+        </td>
+		<td width="25%">		 
+		 <canvas  id="idt7" width="200" height="200"></canvas>	  			 
+        </td>   
+        </tr>
+    </tbody></table>
+		
+  </body>	
+	
+<style>
+	body{
+    background-color: #000000; /* Цвет фона веб-страницы */
+	float: left;
+   }  
+</style>
+
+ 
+ 
+ 
+ <script type="text/javascript">
+
+	var ds_cfg = ~ds_cfg~;
+	var sen_addr;
+	var sen_fmt;
+	var sen_sc;
+	var ds_cnt;
+	var stop_addr;
+	
+
+var value;
+var value1;	  
+var value2;	
+var value3;	
+var x0,x1;    
+var t = [];	 
+var tds = [];  	 
+
+	function update()
+	{
+	newAJAXCommand('mdb.xml?start='+sen_addr+'&stop='+stop_addr, updateStatus, false);
+	}	
+	
+	
+function updateStatus(xmlData) {		
+		
+	if(sen_fmt==1)
+	{
+		for (var i = 0; i < ds_cnt;)
+		{
+		value=(getXMLValue(xmlData, 'm'+parseInt(sen_addr+i)));			
+		tds[i] =(parseFloat(value/100).toFixed(1));
+		t[i].setValueAnimated(tds[i]);
+		t[i].toggleUserLed();	
+		setTimeout(function(){t[i].toggleUserLed()}, 100);
+		i++;
+		}
+			
+	}
+	
+	if(sen_fmt==0)
+	{
+		for (var i = 0; i < ds_cnt; )
+		{
+		tds[i]=int32_float((getXMLValue(xmlData, 'm'+parseInt(sen_addr+2*i+1))), (getXMLValue(xmlData, 'm'+parseInt(sen_addr+2*i)))).toFixed(1);		 
+		t[i].setValueAnimated(tds[i]);
+		t[i].toggleUserLed();
+		setTimeout(function(){t[i].toggleUserLed()}, 100);
+		i++;		
+		}	
+			
+	}
+ 
+ /*
+	t1.toggleUserLed();
+	t2.toggleUserLed();
+	t3.toggleUserLed();
+	t4.toggleUserLed();
+	
+*/	
+ 
+ 
+}
+
+
+function init()
+{
+  
+		for (var i = 0; i < ds_cnt; i++)
+		{	
+			 /*				
+				var canvas = $('<canvas />').attr({
+				id: "idt" + i,
+				width: 200,
+				height: 200
+				});		
+				("#i").append( canvas );	*/	
+				//alert(i);
+				
+			t[i] = new steelseries.Radial('idt'+i, {
+				gaugeType: steelseries.GaugeType.TYPE4,
+				size: 330,
+				minValue: -50,
+				maxValue: 50,
+				pointerType: steelseries.PointerType.TYPE16,	 
+				foregroundType: steelseries.ForegroundType.TYPE4,
+				frameDesign: steelseries.FrameDesign.ANTHRACITE,
+				backgroundColor: steelseries.BackgroundColor.LIGHT_GRAY,
+				pointerColor: steelseries.ColorDef.BLACK,
+				trendVisible: false,
+				thresholdVisible: false,
+				userLedVisible: true,
+				userLedColor: steelseries.LedColor.BLUE_LED,	
+				maxMeasuredValueVisible: true,	
+				titleString: "T"+i,
+				unitString: "°C",
+				threshold: 30,
+				lcdVisible: true,
+				lcdDecimals: 1
+				}); 	
+					
+		}
+}		
+	
+	
+	
+	
+
+//загрузка страницы
+$(document).ready(function()
+{
+/*
+var ds_cfg = 0;
+var sen_addr;
+var sen_fmt;
+var sen_sc;
+var ds_cnt;
+var stop_addr;
+	
+
+var value;
+var value1;	  
+var value2;	
+var value3;	
+var x0,x1;    
+var t = [];	 
+var tds = []; 
+*/
+ds_cfg = ~ds_cfg~;
+
+sen_addr=(((ds_cfg)&(0x00007FE0))>>5);
+sen_fmt=(((ds_cfg)&(0x00008000))>>15);
+sen_sc=(((ds_cfg)&(0x0000001C))>>2);
+ds_cnt=~ds_cnt~;
+
+if(sen_fmt==0)
+{
+stop_addr=sen_addr+ds_cnt*2;
+}
+if(sen_fmt==1)
+{
+stop_addr=sen_addr+ds_cnt;
+}
+/*
+alert(sen_addr);
+alert(sen_fmt);
+alert(sen_sc);
+alert(ds_cnt);
+*/
+
+switch (sen_sc) {
+        case 0: sen_sc=1;
+		break;
+        case 1: sen_sc=2;
+		break;
+		case 2: sen_sc=4;
+		break;
+		case 3: sen_sc=10;
+		break;
+        }
+init();		
+//update();		
+setInterval(function(){update()}, parseInt(500*sen_sc));
+
+$(function ()
+{
+ 
+});
+	
+}); 
+
+</script>    
+</head>  
+</html>

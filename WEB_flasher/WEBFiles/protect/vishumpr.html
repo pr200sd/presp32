@@ -1,0 +1,188 @@
+<html>
+  
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Давление/Влажность</title>
+    
+    <link rel="stylesheet" href="../style.css">	
+	<script src="../lib/jquery-2.1.4.min.js"></script>
+	<script src="../lib/jquery-ui.min.js"></script>	
+	<link href="../lib/jquery-ui.css" rel="stylesheet"/>
+    <script type="text/javascript" src="../lib/segment-display1.js"></script>
+	<script src="../lib/scripts.js"></script>
+	<script src="../lib/site.js"></script>	
+ <body>
+
+	
+	<table><tbody>
+        
+		<tr>		
+		<td width="33%">
+             <canvas id="display" width="580" height="136"></canvas> 
+			<canvas id="display1" width="580" height="136"></canvas> 
+			<canvas id="display2" width="580" height="136"></canvas>
+        </td>
+        <td width="33%">            
+		  	
+        </td>
+		<td width="33%">             
+			  			 
+        </td>		
+        </tr>
+        <tr>
+            <td width="33%">
+            
+            </td>
+       
+            <td width="33%">
+              
+            </td>
+        
+            <td width="33%">
+               
+            </td>
+        </tr>
+    </tbody></table>
+	
+	
+	
+  </body>	
+	
+<style>
+	body{
+    background-color: #000000; /* Цвет фона веб-страницы */
+	float: left;
+   }  
+ </style>
+ 
+    <script type="text/javascript">
+	
+      var display = new SegmentDisplay("display");
+      display.pattern         = "####.####";
+      display.cornerType      = 2;
+      display.displayType     = 7;
+      display.displayAngle    = 9;
+      display.digitHeight     = 20;
+      display.digitWidth      = 12;
+      display.digitDistance   = 2;
+      display.segmentWidth    = 3;
+      display.segmentDistance = 0.5;
+      display.colorOn         = "rgba(255, 99, 71, 0.9)";
+      display.colorOff        = "rgba(0, 0, 0, 0.05)";
+
+	  var display1 = new SegmentDisplay("display1");
+      display1.pattern         = "####.####";
+      display1.cornerType      = 2;
+      display1.displayType     = 7;
+      display1.displayAngle    = 9;
+      display1.digitHeight     = 20;
+      display1.digitWidth      = 12;
+      display1.digitDistance   = 2;
+      display1.segmentWidth    = 3;
+      display1.segmentDistance = 0.5;
+      display1.colorOn         = "rgba(0, 0, 205, 0.9)";
+      display1.colorOff        = "rgba(0, 0, 0, 0.05)";
+
+	  
+	  var display2 = new SegmentDisplay("display2");
+      display2.pattern         = "#####.#";
+      display2.cornerType      = 2;
+      display2.displayType     = 7;
+      display2.displayAngle    = 9;
+      display2.digitHeight     = 20;
+      display2.digitWidth      = 12;
+      display2.digitDistance   = 2;
+      display2.segmentWidth    = 3;
+      display2.segmentDistance = 0.5;
+      display2.colorOn         = "rgba(0, 255, 255, 0.9)";
+      display2.colorOff        = "rgba(0, 0, 0, 0.05)";
+	  
+     
+	 
+
+var value;
+var value1;	  
+var value2;	
+var x0,x1;
+
+
+	
+	function update()
+	{
+	newAJAXCommand('mdb.xml?start=550&stop=558', updateStatus, true);
+	}	
+
+	
+function updateStatus(xmlData) {
+		
+	x1=(getXMLValue(xmlData, 'm551'));	
+	x0=(getXMLValue(xmlData, 'm550'));
+	value=(int32_float(x1, x0).toFixed(1)); 
+	x1=(getXMLValue(xmlData, 'm557'));	
+	x0=(getXMLValue(xmlData, 'm556'));
+	value1=(int32_float(x1, x0).toFixed(1)); 	
+	x1=(getXMLValue(xmlData, 'm553'));	
+	x0=(getXMLValue(xmlData, 'm552'));
+	value2=(int32_float(x1, x0).toFixed(1)); 		 
+	   
+/******************** Температура на датчике давления********************************************/	
+	if((value>10))
+	{
+	display.pattern         = "####.####";
+	}
+	if((value>=0)&&(value<10))
+	{
+	display.pattern         = "###.####";
+	}
+	if((value<0)&&(value>-10))
+	{
+	display.pattern         = "####.####";
+	}
+	if((value<-10))
+	{
+	display.pattern         = "#####.####";
+	}
+	
+/******************** Влажность********************************************/	
+
+	if((value1>=0)&&(value1<10))
+	{
+	display1.pattern         = "###.####";
+	}
+	if((value1>=10))
+	{
+	display1.pattern         = "####.####";
+	}
+	
+/******************** Давление********************************************/		
+	if((value2==0))
+	{
+	display2.pattern         = "###.#";
+	}
+	if((value2>0))
+	{
+	display2.pattern         = "#####.#";
+	}
+	
+	display.setValue('t '+value+' *'+'C');
+	display1.setValue('H '+value1+' *'+'o');
+	display2.setValue('P '+value2);
+	}
+
+
+
+//загрузка страницы
+$(document).ready(function()
+{
+ 
+update();
+
+$(function () {
+
+});	
+}); 
+
+
+</script>    
+</head> 
+</html>

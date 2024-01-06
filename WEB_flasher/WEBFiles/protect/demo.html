@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>RoundSlider</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	
+	<script src="../lib/scripts.js"></script>
+	<script src="../lib/site.js"></script>	
+    <script src="../lib/jquery-2.1.4.min.js"></script>
+    <link href="../lib/roundslider.min.css" rel="stylesheet" />
+    <script src="../lib/roundslider.min.js"></script>
+	
+	
+	
+</head>
+
+<body style="padding: 10px 0 0 20px; font-family: monospace;">
+
+    <h1>Задатчик</h1>
+   
+
+    <div class="types">
+        <h3>Регистр INT 530</h3>      
+            <div class="control">
+                <div id="shape"></div>
+            </div>     
+    </div>    
+   
+    
+    <script type="text/javascript">
+$(document).ready(function () {	
+		
+	$("#shape").roundSlider({
+    sliderType: "min-range",
+    handleShape: "round",
+    width: "50",
+    radius: "150",
+    value: ~mdbud530~,
+	circleShape: "half-top",
+	tooltipFormat: "changeTooltip",
+	
+		change: function (args) {	
+		var value = args.value;
+		newAJAXCommand('../web.cgi?mdbw530='+value);	
+		}		
+	});	
+	
+	function changeTooltip(args)
+		{
+		return "-> " + args.value;
+		}
+	
+	
+	
+ });
+		
+	
+		
+</script>
+
+ <style>
+ 
+h1 span {
+	font-size: 0.6em;
+}
+   <!--     .types {
+          display: inline-block;
+          padding: 10px 30px;
+          border: 1px dotted;
+          margin-right: 20px;
+          overflow: hidden;
+        }-->
+		
+
+.rs-tooltip-text {
+    font-family: verdana;
+    font-size: 60px;
+    border-radius: 7px;
+    text-align: center;
+}
+		
+.control .rs-range-color {
+background-color: #ff2b08;
+}
+.types .rs-path-color {
+    background-color: #4aee25;
+}
+.types .rs-handle {
+    background-color: #4c13fb;
+}
+.types .rs-bg-color {
+    background-color: #bbbbbb;
+}	
+		
+</style>
+</body>
+</html>

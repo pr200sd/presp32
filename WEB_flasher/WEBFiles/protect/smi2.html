@@ -1,0 +1,137 @@
+<html>
+  
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>СМИ</title>
+    
+    <link rel="stylesheet" href="../style.css">	
+	<script src="../lib/jquery-2.1.4.min.js"></script>
+	<script src="../lib/jquery-ui.min.js"></script>	
+	<link href="../lib/jquery-ui.css" rel="stylesheet"/>
+    <script type="text/javascript" src="../lib/segment-display1.js"></script>
+	<script src="../lib/scripts.js"></script>
+	<script src="../lib/site.js"></script>	
+ <body>
+ 
+ 
+	
+	<table><tbody>
+ 
+	
+	<canvas id="display" width="580" height="236"></canvas> 
+	<canvas id="display1" width="580" height="236"></canvas> 
+	<canvas id="display2" width="580" height="136"></canvas>
+	
+  </body>	
+	
+<style>
+	body{
+    background-color: #000000; /* Цвет фона веб-страницы */
+	float: left;
+   }  
+ </style>
+ 
+    <script type="text/javascript">
+	
+      var display = new SegmentDisplay("display");
+      display.pattern         = "##########";
+      display.cornerType      = 2;
+      display.displayType     = 7;
+      display.displayAngle    = 9;
+      display.digitHeight     = 20;
+      display.digitWidth      = 14;
+      display.digitDistance   = 2;
+      display.segmentWidth    = 3;
+      display.segmentDistance = 0.2;
+      display.colorOn         = "rgba(255, 99, 71, 0.9)";
+      display.colorOff        = "rgba(0, 0, 0, 0.05)";
+
+	  var display1 = new SegmentDisplay("display1");
+      display1.pattern         = "##########";
+      display1.cornerType      = 2;
+      display1.displayType     = 7;
+      display1.displayAngle    = 9;
+      display1.digitHeight     = 20;
+      display1.digitWidth      = 12;
+      display1.digitDistance   = 2;
+      display1.segmentWidth    = 3;
+      display1.segmentDistance = 0.5;
+      display1.colorOn         = "rgba(0, 0, 205, 0.9)";
+      display1.colorOff        = "rgba(0, 0, 0, 0.05)";
+
+	  
+	  var display2 = new SegmentDisplay("display2");
+      display2.pattern         = "##########";
+      display2.cornerType      = 2;
+      display2.displayType     = 7;
+      display2.displayAngle    = 9;
+      display2.digitHeight     = 20;
+      display2.digitWidth      = 12;
+      display2.digitDistance   = 2;
+      display2.segmentWidth    = 3;
+      display2.segmentDistance = 0.5;
+      display2.colorOn         = "rgba(0, 255, 255, 0.9)";
+      display2.colorOff        = "rgba(0, 0, 0, 0.05)";
+	  
+     
+	 
+
+var value;
+var value1;	  
+var value2;	
+var x0,x1,x2,x3,x4,x5;
+
+
+	
+	function update()
+	{
+	newAJAXCommand('mdb.xml?start=0&stop=8', updateStatus, true);
+	}	
+	
+
+	
+	
+function updateStatus(xmlData) {
+		
+	x0=(getXMLValue(xmlData, 'm0'));
+	x1=(getXMLValue(xmlData, 'm1'));
+	value=(x0|(x1<<16)).toString(); 
+	
+	x2=(getXMLValue(xmlData, 'm2'));
+	x3=(getXMLValue(xmlData, 'm3'));	
+	value1=(x2|(x3<<16)).toString(); 
+	
+	//x4=(getXMLValue(xmlData, 'm554'));
+	//x5=(getXMLValue(xmlData, 'm555'));
+	//value2=(x4|(x5<<16)).toString();  		 
+
+	x6=(getXMLValue(xmlData, 'm6'));	 
+	value2=(x6).toString();  	
+
+/*	
+	display.setValue('t '+value+' *'+'C');
+	display1.setValue('t '+value1+' *'+'o');
+	display2.setValue('t '+value2);
+*/	
+	display.setValue(value);
+	display1.setValue(value1);
+	display2.setValue(value2);	
+	}
+
+
+
+//загрузка страницы
+$(document).ready(function()
+{
+ 
+update();
+
+$(function () {
+
+});	
+}); 
+
+
+</script>    
+</head> 
+</html>

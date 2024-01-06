@@ -1,0 +1,692 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Термостат</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	
+	<link rel="stylesheet" href="../style.css">	
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">	
+	
+	 <script type="text/javascript" src="../lib/segment-display1.js"></script>	
+	
+	<script src="../lib/scripts.js"></script>
+	<script src="../lib/site.js"></script>		
+	
+	<script src="../lib/jquery-2.1.4.min.js"></script>
+	<script src="../lib/jquery-ui.min.js"></script>	
+	<link rel="stylesheet" href="../lib/jquery-ui.css">
+
+	<script src="../lib/steelseries-min.js"></script>	
+	<script src="../lib/tween-min.js"></script>
+    <link href="../lib/roundslider.min.css" rel="stylesheet"/>
+    <script src="../lib/roundslider.min.js"></script>	
+	
+	<script src="../lib/jquery.mobile-1.4.5.min.js"></script>
+	
+<!--	
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">		
+	
+	<script src="../lib/scripts.js"></script>
+	<script src="../lib/site.js"></script>	
+    <script src="../lib/jquery-2.1.4.min.js"></script>
+	<script src="../lib/jquery-ui.min.js"></script>	
+	<link rel="stylesheet" href="../lib/jquery-ui.css">		
+    <link href="../lib/roundslider.min.css" rel="stylesheet"/>
+    <script src="../lib/roundslider.min.js"></script>	
+	
+	<script src="../lib/jquery.mobile-1.4.5.min.js"></script>-->
+	
+	
+	 
+	
+</head>
+<style>
+
+html
+{
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+body
+{
+	background:#c3c48f;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+} 
+
+.table { 
+    margin: 0px auto; 
+    max-width:500px; 
+    padding:10px; 
+    margin-top:50px;
+    box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.1);
+    text-align:left;
+}
+
+
+h1 span {
+	font-size: 0.6em;
+}
+
+.rs-control {
+    border: 7px solid #ffffff;
+    border-radius: 100%;
+    padding: 2px;
+}
+	
+.rs-range-color {
+  background: #ed0909;
+}
+
+.rs-path-color {
+  background: #bcbcbc;
+}
+
+.rs-bg-color {
+    background-color: #c3c48f;
+}
+
+.rs-bar .rs-seperator {
+  border-color: #ffffff;
+  margin-left: 0px;
+}
+
+.rs-tooltip-text {
+  font-size: 60px;
+  color: #ffffff;
+}
+
+.rs-handle-dot {
+  padding: 11px;
+}
+
+.rs-handle-dot:after {
+  background-color: #000000;
+}
+
+span.rs-number {
+  position: absolute;
+  top: -8px;
+  left: 36px;
+  font-family: Segoe UI;
+  font-size: 15px;
+}
+
+.rs-bar.rs-start .rs-seperator,
+.rs-bar.rs-end .rs-seperator {
+  display: none;
+}
+
+
+#back
+{	
+	margin-left:auto;
+    margin-right:auto;
+	width: 100%;
+	margin-bottom:20px;	
+}	
+.btn-shed {
+    font-size:22px;
+    color:#fff;
+    background-color:#555;
+    cursor:pointer;
+    text-decoration:none;
+    border:0;
+	padding-top:10px;
+    padding-bottom:10px;	
+	margin-right:-3px;    
+}
+
+.btn-left {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.btn-right {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+#fr, #fr2, #slider
+ {
+ max-width:500px;  
+ margin: 30px auto;
+ text-align: center;
+}
+
+.blink{
+    border: 7px solid #00ff00;
+    border-radius: 100%;
+    padding: 2px;
+}
+
+.text_tab
+{
+text-align: center !important; 
+} 		
+</style>
+  
+<body>
+<div class="table">
+<div data-role="page" id="main" data-add-back-btn="true" data-theme="a">
+    
+<!---->	
+<div data-role="header">
+		<h2>Управление</h2>		
+</div>		
+		
+			<div  id="sel" >					
+			<!--  Сюда выводим select -->				
+			</div>	
+	
+			<div id="fr2">	
+			<canvas id="display" width="300" height="136"></canvas>			
+			<div id="slider"></div>
+			</div>
+			<button id="back" onclick="return location.href = '../index.htm'"  class="btn-shed btn-left btn-right" data-ajax="false"> Выход</button>
+		  
+   
+   
+		<div data-role="footer" class="center">
+			<h6>	 
+			~inc:sys.inc~
+			~inc:time.inc~	
+			Version: ~sys_sysver~
+			</h6>
+			<form  align="left">
+				<div class="ui-field-contain" id="theme-selector">
+					<fieldset data-role="controlgroup" data-theme="b" data-type="horizontal">
+						<legend>Theme:</legend>
+						<input type="radio" name="theme" id="a" value="on" checked="checked">
+						<label for="a">A</label>
+						<input type="radio" name="theme" id="b" value="off">
+						<label for="b">B</label>						
+					</fieldset>			
+				</div>	
+			</form>	
+			
+			<div class="ui-grid-d center">
+			<div class="ui-block-d"><a href="../indexp.htm" data-ajax="false" class="ui-shadow ui-btn ui-corner-all ui-icon-action ui-btn-icon-notext ui-btn-inline">Button</a></div>
+			<div class="ui-block-e"><a href="../indexp.htm" data-ajax="false" class="ui-shadow ui-btn ui-corner-all ui-icon-home ui-btn-icon-notext ui-btn-inline">Button</a></div>
+			</div>			
+		
+		</div> 
+      
+	</div>
+	
+</div> 	
+	
+	
+<script type="text/javascript">
+
+var data_T= null;
+var v530, v531, v532, v533;
+var status;
+var config;
+
+var timerId;
+ var x0, x1, t1, t2, t3, t4, t;
+
+
+var	arr_sel0=new Array(			
+			{"val":"0","text":"1 КАНАЛ"},
+			{"val":"1","text":"2 КАНАЛ"},
+			{"val":"2","text":"3 КАНАЛ"},
+			{"val":"3","text":"4 КАНАЛ"}
+);	
+ 
+//Рисование селектора
+function Drow_select(n,id,title,arr)
+{
+	var out;
+	out='';
+	out='<select id="'+id+n+'" name="'+id+n+'"   title="'+title+'">';	
+	for (i=0;i<arr.length;i++){
+		out+='<option value="'+arr[i].val+'">'+arr[i].text+'</option>';
+	}
+	out+=	'</select>';
+	return out;
+}
+
+
+ 
+function sel_page(N){													//Рисование селектора
+	html='';	 	
+	for (n=0;n<N;n++){	
+	var c=n+1;
+	html+='<ul data-role="listview" data-inset="true" data-divider-theme="a">';	
+//	html+='<li data-role="list-divider" class="text_tab">Выбор канала</li>';
+	html+=Drow_select(n, 'termo','Выбор термостата',arr_sel0);
+//	html+='</li> ';	
+	html+='</ul>';
+	}
+	return html;
+}			
+
+function rgb(col, obj)
+{
+					if (!isNaN(col)) {                     
+                    if (col >= 0 && col < 8) {                   
+					$(obj).css('background', '#0000f7');						
+                    } else if (col >= 8 && col < 11) {                        
+						$(obj).css('background', '#004af7');
+                    } else if (col >= 11 && col < 14) {                         
+						$(obj).css('background', '#0067f7');
+                    } else if (col >= 14 && col < 17) {                         
+						$(obj).css('background', '#00daf7');
+                    } else if (col >= 17 && col < 20) {                       
+						$(obj).css('background', '#00f7b5');
+                    } else if (col >= 20 && col < 23) {                       
+						$(obj).css('background', '#00f75f');
+                    } else if (col >= 23 && col < 26) {                       
+						$(obj).css('background', '#3af700');
+                    } else if (col >= 26 && col < 29) {                       
+						$(obj).css('background', '#a9f700');
+                    } else if (col >= 29 && col < 32) {                       
+						$(obj).css('background', '#f7be00');
+                    } else if (col >= 32 && col < 35) {                       
+						$(obj).css('background', '#f73a00');
+                    } else if (col >= 35) {                       
+						$(obj).css('background', '#f70000');
+                    }
+   }
+
+}
+
+
+$( document ).on( "pagecreate", function() {
+
+$( "#theme-selector input" ).on( "change", function( event )
+	{
+	var themeClass = $( "#theme-selector input:checked" ).attr( "id" );
+	$( "#main" ).removeClass( "ui-page-theme-a ui-page-theme-b" ).addClass( "ui-page-theme-" + themeClass );
+	$( "#clps" ).removeClass( "ui-page-theme-a ui-page-theme-b" ).addClass( "ui-page-theme-" + themeClass );	
+	$( "#smenu" ).removeClass( "ui-page-theme-a ui-page-theme-b" ).addClass( "ui-page-theme-" + themeClass );
+	$( ".ui-collapsible-content" ).removeClass( "ui-body-a ui-body-b" ).addClass( "ui-body-" + themeClass );	 
+	
+	$( ".ui-li-divider" ).removeClass( "ui-bar-a ui-bar-b" ).addClass( "ui-bar-" + themeClass ); 
+	$( ".ui-li-divider" ).removeClass( "ui-bar-a ui-bar-b" ).addClass( "ui-bar-" + themeClass );
+	$( ".ui-listview" ).removeClass( "data-divider-theme-a data-divider-theme-b" ).addClass( "data-divider-theme-" + themeClass );
+	$( ".ui-collapsible-heading-toggle " ).removeClass( "ui-btn-a ui-btn-b" ).addClass( "ui-btn-" + themeClass );
+	$( ".ui-collapsible-set" ).removeClass( "ui-group-theme-a ui-group-theme-b" ).addClass( "ui-group-theme-" + themeClass );	
+	
+	$( "#log" ).removeClass( "ui-page-theme-a ui-page-theme-b"  ).addClass( "ui-page-theme-" + themeClass );	
+	$( ".theme" ).text( themeClass );
+	
+		var className_a=".ui-page-theme-a";
+		var className_b=".ui-page-theme-b";				
+		if($("#main"+className_b).length>0)
+		{
+		$("#logo").addClass("invert");		
+		}
+		if($("#main"+className_a).length>0)
+		{
+		$("#logo").removeClass("invert");
+		}				
+		
+	});
+
+
+var display = new SegmentDisplay("display");
+      display.pattern         = "####.####";
+      display.cornerType      = 2;
+      display.displayType     = 7;
+      display.displayAngle    = 9;
+      display.digitHeight     = 20;
+      display.digitWidth      = 12;
+      display.digitDistance   = 2;
+      display.segmentWidth    = 3;
+      display.segmentDistance = 0.5;
+      display.colorOn         = "rgba(0, 205, 0, 0.9)";
+      display.colorOff        = "rgba(0, 0, 0, 0.02)";
+
+
+
+$(document).ready(function () {	
+
+	$('#sel').append(sel_page(1));	
+	$('#sel').trigger('create');
+	
+//	config=~sys_config~;
+	config=0;
+
+	if(!(config&2))
+	{ 
+	$('#mqtt_lbl').hide(); 
+	}
+
+	
+	if(data_T==null)
+	{
+	data_T=setInterval(function(){update_t();}, 1000);
+	}
+
+	
+	$.fn.roundSlider.prototype._invertRange = true;
+
+	// this is core functionality to generate the numbers
+	$.fn.roundSlider.prototype.defaults.create = function() {
+	var o = this.options, tickInterval = 1;
+	for (var i = o.min; i <= o.max-1; i += tickInterval) {
+		var angle = this._valueToAngle(i);
+		var numberTag = this._addSeperator(angle, "rs-custom");
+		var number = numberTag.children();
+		number.clone().css({
+		  "width": o.width + this._border(),
+		  "margin-top": this._border(true) / -2
+		}).appendTo(numberTag);
+		number.removeClass().addClass("rs-number").html(i).rsRotate(-angle);
+	}
+	}
+
+	$("#slider").roundSlider({
+		  sliderType: "min-range",
+		  startAngle: 90,
+		  editableTooltip: false,
+		  handleShape: "dot",
+		  handleSize: "+6",
+		  radius: 180,
+		  width: 35,
+		  min: 5,
+		  max: 35,
+		  step: 1.0,
+		  value: ~mdbuw530~,
+		  startAngle: 90,
+
+  
+		  tooltipFormat: function (e) {
+		  var parts = parseFloat(e.value).toFixed(2).split(".");   
+		  var value = parts[0] + "°С" ;
+		  
+		  rgb(parts[0], '.rs-range-color');     
+	 //   newAJAXCommand('../web.cgi?mdbw530='+parts[0]);   
+			return value;
+		  }, 
+ 
+ 
+		 //drag: function (e) {
+		 start: function (e) {
+		 update_t();
+			var parts = parseFloat(e.value).toFixed(2).split(".");
+/*			var timerId;  
+		  
+			if(timerId==null) 
+			{
+			timerId=setInterval(function(){$('.rs-control').toggleClass("blink");},400) 
+			// через x сек остановить повторы
+			setTimeout(function() {clearInterval(timerId);}, 1600);
+			} 
+*/		  
+			var termo = $("#termo0 option:selected").val();
+			newAJAXCommand('../web.cgi?mdbw53'+termo+'='+parts[0]);   
+			},
+ 
+		 change: function (e) {
+		 update_t();
+			var parts = parseFloat(e.value).toFixed(2).split(".");
+/*			var timerId;  
+		  
+			if(timerId==null) 
+			{
+			timerId=setInterval(function(){$('.rs-control').toggleClass("blink");},500) 
+			// через x сек остановить повторы
+			setTimeout(function() {clearInterval(timerId);}, 1000);
+			} 
+*/		  
+		  	var termo = $("#termo0 option:selected").val();
+			newAJAXCommand('../web.cgi?mdbw53'+termo+'='+parts[0]);   
+			//newAJAXCommand('../web.cgi?mdbw530='+parts[0]);  
+			},
+  
+		 stop: function (e) {
+		 update_t();
+		 
+			var parts = parseFloat(e.value).toFixed(2).split(".");
+		 
+//			var timerId;    
+			if(timerId==null) 
+			{
+			timerId=setInterval(function(){$('.rs-control').toggleClass("blink");},400) 
+			// через x сек остановить повторы
+			setTimeout(function() {clearInterval(timerId);}, 800);
+			}
+
+
+
+		
+			var termo = $("#termo0 option:selected").val();
+			newAJAXCommand('../web.cgi?mdbw53'+termo+'='+parts[0]);   
+			//newAJAXCommand('../web.cgi?mdbw530='+parts[0]);  
+			}
+     
+	});
+
+
+	rgb(~mdbud530~, '.rs-range-color');
+
+	
+	
+	
+	function updateStatusT(xmlData) {											//обновление температуры
+		
+		{
+		v530=(getXMLValue(xmlData, 'm'+parseInt(530)));
+		v531=(getXMLValue(xmlData, 'm'+parseInt(531)));
+		v532=(getXMLValue(xmlData, 'm'+parseInt(532)));
+		v533=(getXMLValue(xmlData, 'm'+parseInt(533)));	
+		
+		status=(getXMLValue(xmlData, 'm'+parseInt(542)));	
+		
+		x1=(getXMLValue(xmlData, 'm535'));	
+		x0=(getXMLValue(xmlData, 'm534'));
+		t1=(int32_float(x1, x0).toFixed(1));
+		x1=(getXMLValue(xmlData, 'm537'));	
+		x0=(getXMLValue(xmlData, 'm536'));
+		t2=(int32_float(x1, x0).toFixed(1));
+		x1=(getXMLValue(xmlData, 'm539'));	
+		x0=(getXMLValue(xmlData, 'm538'));
+		t3=(int32_float(x1, x0).toFixed(1));
+		x1=(getXMLValue(xmlData, 'm541'));	
+		x0=(getXMLValue(xmlData, 'm540'));
+		t4=(int32_float(x1, x0).toFixed(1));
+		
+		
+		
+/*	
+	if((t>=0)&&(t<10))
+	{
+	display.pattern         = "###.####";
+	}
+	if((t<0)&&(t>-10)||(t>10))
+	{
+	display.pattern         = "####.####";
+	}
+	if((t<-10))
+	{
+	display.pattern         = "#####.####";	}
+	
+	display.setValue('t '+t+' *'+'C');
+		  
+*/		
+		
+		
+		var valueSelected = $("#termo0 option:selected").val();
+		
+		if(valueSelected==0)
+		{
+		var n=v530;
+		t=t1
+		if((t>=0)&&(t<10))
+		{
+		display.pattern         = "###.####";
+		}
+		if((t<0)&&(t>-10)||(t>10))
+		{
+		display.pattern         = "####.####";
+		}
+		if((t<-10))
+		{
+		display.pattern         = "#####.####";	}		
+		display.setValue('t '+t+' *'+'C');		
+		
+			if(status&0x1)
+			{
+			$('.rs-tooltip-text').css('color', '#ff0000');
+			//$('.rs-control').css('border: 7px solid #ff0000');
+			$('.rs-control').toggleClass("blink");
+			}
+			else
+			{
+			$('.rs-tooltip-text').css('color', '#0000ff');
+			//$('.rs-control').css('border: 7px solid #0000ff');
+			$('.rs-control').toggleClass("blink");
+			}
+		}
+		if(valueSelected==1)
+		{
+		var n=v531;
+		t=t2
+		if((t>=0)&&(t<10))
+		{
+		display.pattern         = "###.####";
+		}
+		if((t<0)&&(t>-10)||(t>10))
+		{
+		display.pattern         = "####.####";
+		}
+		if((t<-10))
+		{
+		display.pattern         = "#####.####";	}		
+		display.setValue('t '+t+' *'+'C');		
+		
+		if(status&0x2)
+			{
+			$('.rs-tooltip-text').css('color', '#ff0000');
+			$('.rs-control').toggleClass("blink");
+			}
+			else
+			{
+			$('.rs-tooltip-text').css('color', '#0000ff');
+			$('.rs-control').toggleClass("blink");
+			}
+		}
+		if(valueSelected==2)
+		{
+		var n=v532;
+		t=t3
+		if((t>=0)&&(t<10))
+		{
+		display.pattern         = "###.####";
+		}
+		if((t<0)&&(t>-10)||(t>10))
+		{
+		display.pattern         = "####.####";
+		}
+		if((t<-10))
+		{
+		display.pattern         = "#####.####";	}		
+		display.setValue('t '+t+' *'+'C');		
+		if(status&0x4)
+			{
+			$('.rs-tooltip-text').css('color', '#ff0000');
+			$('.rs-control').toggleClass("blink");
+			}
+			else
+			{
+			$('.rs-tooltip-text').css('color', '#0000ff');
+			$('.rs-control').toggleClass("blink");
+			}
+		}
+		if(valueSelected==3)
+		{
+		var n=v533;
+		t=t4
+		if((t>=0)&&(t<10))
+		{
+		display.pattern         = "###.####";
+		}
+		if((t<0)&&(t>-10)||(t>10))
+		{
+		display.pattern         = "####.####";
+		}
+		if((t<-10))
+		{
+		display.pattern         = "#####.####";	}		
+		display.setValue('t '+t+' *'+'C');		
+		if(status&0x8)
+			{
+			$('.rs-tooltip-text').css('color', '#ff0000');
+			$('.rs-control').toggleClass("blink");
+			}
+			else
+			{
+			$('.rs-tooltip-text').css('color', '#0000ff');
+			$('.rs-control').toggleClass("blink");
+			}
+		}
+		
+		$("#slider").roundSlider("option", "value", n); 
+		}
+}
+	
+	
+	
+	
+	function update_t()  
+{
+	newAJAXCommand('/protect/mdb.xml?start=530&stop=539', updateStatusT, false);	//обновление данных 
+}
+		
+
+	$("#termo0").on('change', function (e) {
+//		var optionSelected = $("option:selected", this);
+//		var valueSelected = this.value;	
+
+		
+/*		if(valueSelected==0)
+		{
+		var n=v530;
+			if(status&0x1)
+			{
+			$('.rs-tooltip-text').css('color', '#ff0000');
+			}
+		}
+		if(valueSelected==1)
+		{
+		var n=v531;
+		if(status&0x2)
+			{
+			$('.rs-tooltip-text').css('color', '#ff0000');
+			}
+		}
+		if(valueSelected==2)
+		{
+		var n=v532;
+		if(status&0x4)
+			{
+			$('.rs-tooltip-text').css('color', '#ff0000');
+			}
+		}
+		if(valueSelected==3)
+		{
+		var n=v533;
+		if(status&0x8)
+			{
+			$('.rs-tooltip-text').css('color', '#ff0000');
+			}
+		}	
+	$("#slider").roundSlider("option", "value", n);	*/	
+	});
+
+	
+	});
+		
+});		
+		
+</script>
+</body>
+</html>

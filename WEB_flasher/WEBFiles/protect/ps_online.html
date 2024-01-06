@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Power Supply ONLINE</title>	
+
+<script src="../lib/jquery-2.1.4.min.js"></script>
+<script src="../lib/jquery-ui.min.js"></script>
+ 
+<link rel="stylesheet" href="../lib/jquery-ui.css">
+ 
+<script src="../lib/highcharts.js"></script>
+<script src="../lib/exporting.js"></script>
+
+<script src="../lib/steelseries-min.js"></script>
+<script src="../lib/dark-green.js"></script>
+<script src="../lib/tween-min.js"></script>		
+<script src="../lib/site.js"></script>		
+	
+	<style type="text/css">
+
+	body { margin: 10; padding: 10; }
+
+	#i{
+	position: absolute;
+	width: 100%;
+	height: 96%; 
+	float:right;
+	clear:right;
+	}	
+	
+	</style>	
+	
+	
+</head>
+<body onload="init();" style="background-color:#404040">
+   
+            
+                <div id=i>
+				<div id="container" style="min-width: 310px; height: 600px; margin: 0 auto"></div>	
+				<form action="../index.htm">
+				<button type="submit">Back</button>					 
+				 
+				<div id="diaUz"></div>
+				<div id="diaIz"></div>
+				<div id="diaR"></div>
+				</form>
+				</div>
+			
+				
+<script> 
+
+var Uz=0.0;
+var Iz=0.0; 
+
+	var lcd = [];  
+	var z = []; 
+	var en = [];
+	var dp = [];
+	var addr = [];
+	var type = [];
+//	var stat = [];
+	var len = [];
+	var lcd_cfg = [];
+	var d = [];
+	var y = [];
+	var R = [];
+	var ser = [];
+	var x0 = [];
+	var x1 = [];
+  
+    var time = (new Date()).getTime();
+  
+	lcd_cfg[0]=~lcd_cfg0~;
+	lcd_cfg[1]=~lcd_cfg1~;
+	lcd_cfg[2]=~lcd_cfg2~;
+	lcd_cfg[3]=~lcd_cfg3~;
+	lcd_cfg[4]=~lcd_cfg4~;
+	lcd_cfg[5]=~lcd_cfg5~;
+	lcd_cfg[6]=~lcd_cfg6~;
+	lcd_cfg[7]=~lcd_cfg7~;
+	lcd_cfg[8]=~lcd_cfg8~;
+	lcd_cfg[9]=~lcd_cfg9~;
+
+
+
+	for (var i = 0; i < 10; i++)
+	{		
+		en[i]=((lcd_cfg[i])&(0x1));
+		type[i]= ((lcd_cfg[i])>>18)&0x3;  
+		len[i]= parseInt((((lcd_cfg[i])&(0x000030000))>>16), 10);
+		addr[i]= parseInt((((lcd_cfg[i])&(0x00001FFE))>>1), 10);
+		dp[i]=((lcd_cfg[i])&(0x0000E000))>>13;
+		z[i]=0;
+	 
+// int	 
+		if((type[i]==0))
+		{
+		d[i]=1; 		
+			if(en[i])
+			{ 
+			R[i]="R"+addr[i];
+			}
+			else
+			{
+			R[i]="R---";
+			}		
+		}
+
+		
+		if(type[i]==0)
+		{
+		d[i]=1/(Math.pow(10, dp[i]));
+		}
+		 
+//float		 
+		if(type[i]==1)
+		{ 
+		
+		d[i]=1;
+		len[i]=1;
+		
+		
+		if(en[i])
+		{ 
+		R[i]="F"+addr[i];
+		}
+		else
+		{
+		R[i]="F---";
+		}	
+		}	
+
+//переименование под Power Supply
+R[0]="Uizm(F514)";
+R[1]="Iizm(F516)";
+R[2]="P(F518)";
+R[3]="Q(F520)";
+R[4]="Uz(F522)";
+R[5]="Iz(F524)";
+R[6]="Rele(R526)";
+
+if(en[7])
+{ 
+R[7]="t1(R528)";
+}
+else
+{
+R[7]="---";	
+}
+if(en[8])
+{
+R[8]="t2(F530)";	
+}
+else
+{
+R[8]="---";	
+}
+	
+R[9]="---";		
+}
+
+
+
+function save_Uz()
+{			
+	Uz=(parseFloat($("#Uz").val()).toFixed(2));		 
+	float_to_reg(Uz*1.0, 523, 522);	 	
+	$("#diaUz").dialog("close");	
+}	
+
+function save_Iz()
+{			
+	Iz=(parseFloat($("#Iz").val()).toFixed(2));	 
+	float_to_reg(Iz*1.0, 525, 524);	 	
+	$("#diaIz").dialog("close");	
+}
+
+function on_R()
+{		 	
+	 newAJAXCommand('/web.cgi?mdbw526='+1);	 	
+}
+
+function off_R()
+{	 	
+	 newAJAXCommand('/web.cgi?mdbw526='+0);	 
+}
+
+//Вызов Set U
+function setU()
+{
+	$("#diaUz").dialog("open");
+	$("#diaUz").html('<input type="text" size=5 id="Uz" name="Uz" value=~mdbfd522~ required=required pattern="\[0-9]{2}">');		
+}
+
+//Вызов Set I
+function setI()
+{
+	$("#diaIz").dialog("open");
+	$("#diaIz").html('<input type="text" size=5 id="Iz" name="Iz" value=~mdbfd524~ required=required pattern="\[0-9]{2}">');		
+}
+//Вызов ON/OFF R
+function setR()
+{
+	$("#diaR").dialog("open");	
+ 
+//$("#diaR").html('<button type="button" id="onR"   onclick="on_R()"  title="ON Rele">ON</button>'); 
+//$("#diaR").html('<button type="button" id="offR"  onclick="off_R()"  title="OFF Rele">OFF</button>'); 					
+}
+
+
+
+var butUz = [
+    {
+        text: "Set Uz",        
+        click: function() {			 
+		save_Uz();	
+        }
+    },
+    {
+        text: "Cancel",        
+        click: function() {
+		$("#diaUz").dialog("close");		
+        }
+    }
+]; 
+
+var butIz = [
+    {
+        text: "Set Iz",        
+        click: function() {			 
+		save_Iz();	
+        }
+    },
+    {
+        text: "Cancel",        
+        click: function() {
+		$("#diaIz").dialog("close");		
+        }
+    }
+]; 
+
+var butR = [
+    {
+        text: "ON",  
+		icon: "ui-icon-power",		
+        click: function() {			 
+		on_R();	
+        }
+    },	
+	{
+        text: "OFF", 
+		icon: "ui-icon-stop",	
+        click: function() {			 
+		off_R();	
+        }
+    },	
+    {
+        text: "Cancel", 
+		icon: "ui-icon-closethick",	
+        click: function() {
+		$("#diaR").dialog("close");		
+        }
+    }
+]; 
+
+
+
+//диалоговое окно задания U
+	$("#diaUz").dialog({									
+		title: "Uz",  		//тайтл, заголовок окна
+		width: 250,				//ширина
+		height: 250,			//высота
+				
+		autoOpen: false,
+		modal: false,          	//true -  окно модальное, false - нет
+		show: 'slide',
+		buttons: butUz					
+		});
+
+//диалоговое окно задания I
+	$("#diaIz").dialog({									
+		title: "Iz",  		//тайтл, заголовок окна
+		width: 250,				//ширина
+		height: 250,			//высота
+				
+		autoOpen: false,
+		modal: false,          	//true -  окно модальное, false - нет
+		show: 'slide',
+		buttons: butIz					
+		});
+
+//диалоговое окно задания R
+	$("#diaR").dialog({									
+		title: "Rele",  		//тайтл, заголовок окна
+		width: 250,				//ширина
+		height: 250,			//высота
+				
+		autoOpen: false,
+		modal: false,          	//true -  окно модальное, false - нет
+		show: 'slide',
+		buttons: butR					
+		});
+
+
+
+// настройка индикаторов	
+	function init()
+	{
+	
+		for (var i = 0; i < 10; i++)
+		{	
+			if(en[i])
+			{				
+				var canvas = $('<canvas />').attr({
+				id: "int" + i,
+				width: 120,
+				height: 40
+				});				
+				$("#i").append( canvas );		
+				
+				lcd[i] = new steelseries.DisplaySingle('int'+i, {
+                        width: 90*len[i]+5*dp[i],
+                        height: 40,
+                        unitString: "",
+                        unitStringVisible: true,
+                        headerString: R[i],
+                        headerStringVisible: true,                        					
+						lcdDecimals:dp[i],
+                        oldValue: 0.0
+                        });	
+			}
+			
+			$("#int4").on( "dblclick", function() {
+			  setU();
+			} );
+
+			$("#int5").on( "dblclick", function() {
+			  setI();
+			} );
+
+			$("#int6").on( "dblclick", function() {
+			  setR();
+			} );
+			
+		}
+	}	
+	
+	function updateStatus(xmlData)
+	{   	
+	if(!xmlData) return;	
+		for (var w = 0; w < 10; w++)
+		{	
+			if(!type[w]&0x1)
+			{
+			z[w]=getXMLValue(xmlData, 'm'+w);
+			}
+			else
+			{	
+			x1[w]=(getXMLValue(xmlData, 'm'+w)&0xFFFF0000)>>16;	
+			x0[w]=(getXMLValue(xmlData, 'm'+w)&0x0000FFFF);				
+			z[w]=int32_float(x1[w], x0[w]);	
+			}	
+		}			
+	}		
+
+	
+	
+	function server_get()
+	{ 
+	newAJAXCommand('onl.xml', updateStatus, false);
+	}
+	
+	function float_to_reg(val, r1, r0)
+	{
+	var view = new DataView(new ArrayBuffer(4));	
+	view.setFloat32(0, val);    
+	bin=view.getInt32(0).toString(10);
+	var bin1=(bin&0xFFFF0000)>>16;
+	var bin0=bin&0xFFFF;    
+	newAJAXCommand('/web.cgi?mdbw'+r1+'='+bin1);
+	newAJAXCommand('/web.cgi?mdbw'+r0+'='+bin0);
+	}  		
+	  
+
+
+
+
+
+
+/*******************************************************************************************************/
+//						Построение визуализации
+/*******************************************************************************************************/
+	  
+	$(function ()
+	{	
+    $(document).ready(function()
+	{
+			Highcharts.setOptions({
+            global: {
+                useUTC: false
+            }
+			});     
+	   
+	var options = ({
+	   
+                chart: {
+				renderTo: 'container',
+				type: 'spline',
+				zoomType: 'xy',
+                animation: Highcharts.svg, // don't animate in old IE
+                marginRight: 10,
+                events: {
+                    load: function() {
+    
+						for (var i = 0; i < 10; i++)
+						{									
+							{						
+							 ser[i] = this.series[i];
+							}						
+						}
+					
+                        setInterval(function() {								
+                        var x = (new Date()).getTime(); // current time  	
+						newAJAXCommand('onl.xml', updateStatus, false);
+	
+	
+							for (var i = 0; i < 10; i++)
+							{
+								if(en[i])
+								{								
+								y[i]=parseFloat(z[i]*d[i]*en[i]);							
+								lcd[i].setValue(y[i]*en[i]);							
+								ser[i].addPoint([x, y[i]], true, true);									
+								}						
+								else								
+								{
+								ser[i].hide();						
+								}									
+							}							
+                        }, 1000);
+                    }
+                }
+            },
+            title: {
+                text: ''
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
+                title: {
+                    text: ' '
+                },
+				labels: {
+					formatter: function () {
+                    return this.value + ' ';
+					}
+				},
+                plotLines: [	
+				]
+            },
+            tooltip: {
+                formatter: function() {
+                        return '<b>'+ this.series.name +'</b><br/>'+
+                        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) +'<br/>'+
+                        Highcharts.numberFormat(this.y, dp[0]);
+                }
+            },
+            legend: {
+                enabled: true
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                name: R[0],
+                data: (function() {                    
+                    var data0 = [],					 
+                        //time = (new Date()).getTime(),
+                        i;    
+                    for (i = -900; i <= 0; i++) {
+                        data0.push({
+                            x: time + i * 1000,                            
+							y: 0
+                        });
+                    }
+                    return data0;
+                })(),
+				dashStyle: 'solid',
+				marker: {
+                    enabled: false
+                },
+				states: {
+                    hover: {
+                        enabled: false
+                    }
+                }								
+            },
+			
+			{
+                name: R[1],
+                data: (function() {                    
+                    var data1 = [],
+                        //time = (new Date()).getTime(),
+                        i;    
+                    for (i = -900; i <= 0; i++) {
+                        data1.push({
+                            x: time + i * 1000,                            
+							y: 0
+                        });
+                    }
+                    return data1;
+                })(),
+				dashStyle: 'solid',
+				marker: {
+                    enabled: false
+                },
+				states: {
+                    hover: {
+                        enabled: false
+                    }
+                }				
+            },
+			{
+                name: R[2],
+                data: (function() {                    
+                    var data2 = [],
+                        //time = (new Date()).getTime(),
+                        i;    
+                    for (i = -900; i <= 0; i++) {
+                        data2.push({
+                            x: time + i * 1000,                            
+							y: 0
+                        });
+                    }
+                    return data2;
+                })(),
+				dashStyle: 'solid',
+				marker: {
+                    enabled: false
+                },
+				states: {
+                    hover: {
+                        enabled: false
+                    }
+                }
+            },	
+			{
+                name: R[3],
+                data: (function() {                    
+                    var data3 = [],
+                        //time = (new Date()).getTime(),
+                        i;    
+                    for (i = -900; i <= 0; i++) {
+                        data3.push({
+                            x: time + i * 1000,                            
+							y: 0
+                        });
+                    }
+                    return data3;
+                })(),
+				dashStyle: 'solid',
+				marker: {
+                    enabled: false
+                },
+				states: {
+                    hover: {
+                        enabled: false
+                    }
+                }
+            },	
+			{
+                name: R[4],
+                data: (function() {                    
+                    var data4 = [],
+                        //time = (new Date()).getTime(),
+                        i;    
+                    for (i = -900; i <= 0; i++) {
+                        data4.push({
+                            x: time + i * 1000,                            
+							y: 0
+                        });
+                    }
+                    return data4;
+                })(),
+				dashStyle: 'solid',
+				marker: {
+                    enabled: false
+                },
+				states: {
+                    hover: {
+                        enabled: false
+                    }
+                }
+            },		
+			{
+                name: R[5],
+                data: (function() {                    
+                    var data5 = [],
+                        //time = (new Date()).getTime(),
+                        i;    
+                    for (i = -900; i <= 0; i++) {
+                        data5.push({
+                            x: time + i * 1000,                            
+							y: 0
+                        });
+                    }
+                    return data5;
+                })(),
+				dashStyle: 'solid',
+				marker: {
+                    enabled: false
+                },
+				states: {
+                    hover: {
+                        enabled: false
+                    }
+                }
+            },		
+			{
+                name: R[6],
+                data: (function() {                   
+                    var data6 = [],
+                        //time = (new Date()).getTime(),
+                        i;    
+                    for (i = -900; i <= 0; i++) {
+                        data6.push({
+                            x: time + i * 1000,                            
+							y: 0
+                        });
+                    }
+                    return data6;
+                })(),
+				dashStyle: 'solid',
+				marker: {
+                    enabled: false
+                },
+				states: {
+                    hover: {
+                        enabled: false
+                    }
+                }
+            },		
+			{
+                name: R[7],
+                data: (function() {                   
+                    var data7 = [],
+                        //time = (new Date()).getTime(),
+                        i;    
+                    for (i = -900; i <= 0; i++) {
+                        data7.push({
+                            x: time + i * 1000,                            
+							y: 0
+                        });
+                    }
+                    return data7;
+                })(),
+				dashStyle: 'solid',
+				marker: {
+                    enabled: false
+                },
+				states: {
+                    hover: {
+                        enabled: false
+                    }
+                }
+            },		
+			{
+                name: R[8],
+                data: (function() {                    
+                    var data8 = [],
+                        //time = (new Date()).getTime(),
+                        i;    
+                    for (i = -900; i <= 0; i++) {
+                        data8.push({
+                            x: time + i * 1000,                            
+							y: 0
+                        });
+                    }
+                    return data8;
+                })(),
+				dashStyle: 'solid',
+				marker: {
+                    enabled: false
+                },
+				states: {
+                    hover: {
+                        enabled: false
+                    }
+                }
+            },		
+			{
+                name: R[9],
+                data: (function() {                    
+                    var data9 = [],
+                        //time = (new Date()).getTime(),
+                        i;    
+                    for (i = -900; i <= 0; i++) {
+                        data9.push({
+                            x: time + i * 1000,                            
+							y: 0
+                        });
+                    }
+                    return data9;
+                })(),
+				dashStyle: 'solid',
+				marker: {
+                    enabled: false
+                },
+				states: {
+                    hover: {
+                        enabled: false
+                    }
+                }
+            }		
+			]
+			
+        });
+		
+		
+	var chart = new Highcharts.Chart(options);		
+		
+    });
+    
+});   
+    
+</script>
+</body></html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html><head>
+  
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">   
+	<title>Sensor</title>
+	<link rel="stylesheet" href="../style.css">
+	<script src="../lib/scripts.js"></script>
+	<script src="../lib/site.js"></script>	
+	<script src="../lib/jquery-2.1.4.min.js"></script>
+	<script src="../lib/jquery-ui.min.js"></script>	
+	<link href="../lib/jquery-ui.css" rel="stylesheet"/>	 
+</head>			
+
+
+	<body onload="allowAJAX=true;" onunload="allowAJAX=false;">
+	~inc:menu.inc~	
+	<div class="content">
+	<div id="dialog"></div>	  
+	<div id="sent"></div>
+     
+	<div id="ds" class="lcddisplay"><span class="lcd-text">  
+	</div>				
+		
+		<h2 class="title">Sensor Control</h2>	
+			<table class="form">
+				<tr>
+					<td class="label_u">Разрешающая способность:</td>					
+					<td></td>					
+				</tr>
+				<tr>
+					<td class="label_u">Частота опроса:</td>
+					<td></td>				
+				</tr>			
+				<tr>
+					<td class="label_u">Начальный адрес ячейки:</td>				
+					<td></td>				
+				</tr>
+	            <tr>
+					<td class="label_u">Формат данных:</td>				
+					<td></td>				
+				</tr>	
+				<tr>
+				<td><button id="Scan" class="button">Сканировать</button><br></td>
+				<td></td>			
+				</tr>					
+ 			</table>
+
+	
+ <style type="text/css">
+ 
+#ds{
+	overflow: auto;    <!-- для прокрутки по горизонтали   -->
+	}	
+  </style>
+  
+  
+ <script type="text/javascript"> 
+ 
+ for (var i = 0; i < 30; i++)
+{
+var span = $('<span/>').addClass('ds-line').attr({
+				id: "ds-line-" + i,				
+				}).html('~ds_l'+i+'~');								
+				$('#ds').append(span);	
+}	
+ 
+  var	arr_res=new Array
+	(			
+			{"val":"0","text":"9 bit"},
+			{"val":"1","text":"10 bit"},
+			{"val":"2","text":"11 bit"},
+			{"val":"3","text":"12 bit"}
+	);
+  
+  var	arr_sc=new Array
+	(			
+			{"val":"0","text":"min"},
+			{"val":"1","text":"1s"},
+			{"val":"2","text":"2s"},
+			{"val":"3","text":"5s"}			
+	);
+
+	var	arr_fmt=new Array
+	(			
+			{"val":"0","text":"float"},
+			{"val":"1","text":"INT"}							
+	);
+
+//Рисование инпута "number"
+function Drow_inputn(n,id,title){
+var out;				
+	out='<input type="number"  style="width: 135px;"  id="'+id+n+'" name="'+id+''+n+'" title="'+title+'"/>';		
+	return out;	
+}
+	
+//Рисование селектора
+function Drow_select(n,id,title,arr){
+var out;
+	out='<select id="'+id+n+'" name="'+id+n+'" title="'+title+'">';			
+				for (i=0;i<arr.length;i++){
+					out+='<option value="'+arr[i].val+'">'+arr[i].text+'</option>';
+				}
+out+=	'</select>';
+	return out;
+}  
+
+function get(url)
+{
+	$.ajax({
+			type: 'GET',
+			url: url,
+			async: true,
+			timeout: 1000,
+			success: function (data) {					
+			$("#sent").dialog("open");				
+			html="Запрос успешно отправлен!";			
+			$("#sent").html(html);			
+			$("#sent").fadeOut(2000);			
+			setInterval(function(){$("#sent").dialog("close");},2500);					
+			},
+			error: function (data) {					
+			$("#sent").dialog("open");				
+			html="Ошибка отправки!";			
+			$("#sent").html(html);			
+			$("#sent").fadeOut(2000);			
+			setInterval(function(){$("#sent").dialog("close");},2500);					
+			}
+		}); 
+}
+
+  
+  
+ function updateStatus(xmlData)
+{   
+	if(!xmlData) return;	
+		for (var i = 0; i < 30; i++)
+		{
+		$("#ds-line-"+i).html(getXMLValue(xmlData, 'l'+i));	
+		} 	
+} 
+  
+  
+  
+  
+function log_get() {
+	newAJAXCommand('sen.xml' , updateStatus, true);
+}  
+  
+  
+//диалоговое окно выполнения
+$("#sent").dialog({									
+	title: "Sensor",  			//тайтл, заголовок окна
+	width:200,					//ширина
+	height: 100,				//высота		
+	position: 'center',
+	autoOpen: false,
+	modal: false,           	//true -  окно модальное, false - нет
+	show: 'slide',
+	buttons:{		
+			}				
+});	  
+
+
+//загрузка страницы
+$(document).ready(function()
+{
+var ds_cfg = ~ds_cfg~;
+
+$('table.form tbody tr td:eq(0).label_u').append(Drow_select("",'sen_res','Разрешающая способность',arr_res));
+$('table.form tbody tr td:eq(2).label_u').append(Drow_select("",'sen_sc','Частота опроса',arr_sc));
+$('table.form tbody tr td:eq(4).label_u').append(Drow_inputn("",'sen_addr','Начальный адрес'));
+$('table.form tbody tr td:eq(6).label_u').append(Drow_select("",'sen_fmt','INT/FLOAT',arr_fmt)); 
+
+log_get();
+
+
+$(function(){
+
+
+$('#sen_res').val(((ds_cfg)&(0x00000003)));
+$('#sen_sc').val(((ds_cfg)&(0x0000001C))>>2);
+$('#sen_addr').val(((ds_cfg)&(0x00007FE0))>>5);
+$('#sen_fmt').val(((ds_cfg)&(0x00008000))>>15);
+
+
+$('#sen_res').on('change',function(){	
+	var sel  = ($(this).val()&(0x00000003))+(($('#sen_sc').val()&(0x00000007))<<2)+(($('#sen_addr').val()&(0x000003FF))<<5)+(($('#sen_fmt').val()&(0x00000001))<<15);  
+	url = "../web.cgi?ds_cfg="+sel+"&ds_save=1";
+	get(url);     
+});	
+
+$('#sen_sc').on('change',function(){
+	var sel  = ($('#sen_res').val()&(0x00000003))+(($(this).val()&(0x00000007))<<2)+(($('#sen_addr').val()&(0x000003FF))<<5)+(($('#sen_fmt').val()&(0x00000001))<<15);  
+	url = "../web.cgi?ds_cfg="+sel+"&ds_save=1";	 
+	get(url);     
+});	
+
+$('#sen_addr').on('change',function(){	
+	var sel  = ($('#sen_res').val()&(0x00000003))+(($('#sen_sc').val()&(0x00000007))<<2)+(($(this).val()&(0x000003FF))<<5)+(($('#sen_fmt').val()&(0x00000001))<<15);
+	url = "../web.cgi?ds_cfg="+sel+"&ds_save=1";
+	get(url);     
+});
+
+$('#sen_fmt').on('change',function(){	
+	var sel  = ($('#sen_res').val()&(0x00000003))+(($('#sen_sc').val()&(0x00000007))<<2)+(($('#sen_addr').val()&(0x000003FF))<<5)+(($(this).val()&(0x00000001))<<15);
+	url = "../web.cgi?ds_cfg="+sel+"&ds_save=1";
+	get(url);     
+});
+
+
+$('#Scan').click(function(){
+	url = "../web.cgi?ds_scan=1";
+	get(url);	 
+});
+
+
+	
+});  
+  
+  
+});  
+  
+</script>   
+</body> 
+</html>
